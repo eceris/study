@@ -94,3 +94,31 @@ public Future<String> hello() {
 
 hello().get(); //blocking
 ```
+
+
+DeferredResult << setResult를 호출 하는 순간 다른 스레드들의 결과값이 반환됨...
+
+DeferredResult는 어떤 요청에 대한 응답을 이벤트를 Queue에 저장하고 있다가 DeferredResult.setResult() 메소드가 호출되면 DispatcherSerlvet으로 응답을 보낸다.  즉 서버가 Push하는 기술들을 구현할 수 있게 해준다.
+
+
+ResponseBodyEmitter
+
+하나 이상의 객체가 응답에 written되는 비동기 요청 처리를위한 Controller의 리턴 값 유형. DeferredResult가 단일 결과를 생성하는 데 사용되지만 ResponseBodyEmitter를 사용하여 각 객체가 호환되는 HttpMessageConverter로 작성된 여러 객체를 보낼 수 있습니다.
+
+```java
+@RequestMapping(value="/stream", method=RequestMethod.GET)
+ public ResponseBodyEmitter handle() {
+           ResponseBodyEmitter emitter = new ResponseBodyEmitter();
+           // Pass the emitter to another component...
+           return emitter;
+ }
+
+ // in another thread
+ emitter.send(foo1);
+
+ // and again
+ emitter.send(foo2);
+
+ // and done
+ emitter.complete();
+```
