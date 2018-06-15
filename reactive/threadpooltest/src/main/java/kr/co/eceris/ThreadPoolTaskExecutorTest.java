@@ -21,17 +21,15 @@ public class ThreadPoolTaskExecutorTest {
             count.incrementAndGet();
             count.getAndIncrement();
             TimeUnit.MILLISECONDS.sleep(15);
-            if (count.intValue() == 1000) {
+            if (count.intValue() == 5000) {
                 taskExecutor.shutdown();
                 break;
             }
             taskExecutor.execute(() -> {
                 System.out.print("ThreadName : " + Thread.currentThread().getName() + ", ");
                 System.out.print("ThreadPoolSize : " + taskExecutor.getPoolSize() + ", ");
-                System.out.print("corePoolSize : " + taskExecutor.getCorePoolSize() + ", ");
                 System.out.print("queueSize : " + taskExecutor.getThreadPoolExecutor().getQueue().size() + ", ");
                 System.out.print("queueRemainingCapacity : " + taskExecutor.getThreadPoolExecutor().getQueue().remainingCapacity() + ", ");
-                System.out.print("maximumPoolSize : " + taskExecutor.getThreadPoolExecutor().getMaximumPoolSize() + ", ");
                 System.out.println("count : " + count);
                 try {
                     TimeUnit.MILLISECONDS.sleep(1500);
