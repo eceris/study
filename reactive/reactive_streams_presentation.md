@@ -8,6 +8,42 @@
 - Reactive Streams - 표준 - Java9 API
 
 Observer Pattern의 문제점 
+
+```java
+package com.daou.webmvc;
+
+import org.springframework.web.client.RestTemplate;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Test {
+
+    static final RestTemplate REST_TEMPLATE = new RestTemplate();
+
+    public static void main(String[] args) throws InterruptedException {
+
+        Map map = new HashMap<>();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String result = REST_TEMPLATE.getForObject(url, String.class);
+                map.put("response", result);
+                synchronized (map) {
+                    map.notify();
+                }
+            }
+        });
+        thread.start();
+        if (map.get("response") == null) {
+            synchronized (map) {
+                map.wait();
+            }
+        }
+        System.out.println(map.get("response"));
+    }
+}
+
+```
 onComplete??
 onError??
 
@@ -15,7 +51,7 @@ Observable
 reactive의 spec(토비는 프로토콜이라고 함...)
 publisher는 data provider, subscriber 는 data consumer
 ```java
-	onSubscribe onNext* (onError | onComplete)? //onError와 onComplete는 상호배타적 
+onSubscribe onNext* (onError | onComplete)? //onError와 onComplete는 상호배타적 
 ```
 
 
