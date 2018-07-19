@@ -429,8 +429,6 @@ Spring 에서의 비동기
 @EnableAsync를 application context에 알려주고
 
 @Async를 메소드 레벨에 작성하여 사용
-ex :
-
 ```java
 
 @Async
@@ -440,20 +438,81 @@ public Future<String> hello() {
 
 hello().get(); //blocking
 ```
+문제는 매 요청마다 Thread를 생성한다.(100번 호출하면 100개의 Thread가 생성)
 
 
 ListenableFuture << 스프링에서 구현된 객체(callback 형식으로 등록 가능)
 
-CompletableFuture << java 에 들어간 것(혁명적인 것.... 나중에 따로 볼것)
+CompletableFuture << java 9에 들어간 것(혁명적인 것.... 나중에 따로 볼것)
 
 
 @Async annotation의 스레딩 정책을 설정하는 방법
 ThreadPoolTaskExecutor를 @Bean으로 등록
 default는 SimpleAsyncTaskExecutor는 호출 될 때마다 스레드를 생성하고 삭제
 
+Thread는 block 되면 CPU 자원을 많이 차지하는 이유는 ContextSwitching 때문.
+Thread 갯수를 늘리는 것도 결국은 ContextSwitching이 많아지는 것이기 때문에, 속도가 느려질 수 있다.
 
 
 DefferredResult (스프링 비동기의 꽃)
+```java
+@RestController
+public class Application {
+    Queue<DeferredResult<String>> results = new ConcurrentLinkedDeque<>();
+
+    @GetMapping("/dr")
+    public DeferredResult<String> dr() {
+        log.info("/dr");
+        DeferredResult<String> dr = new DeferredResult<>(Long.MAX_VALUE);
+        results.add(dr);
+        return dr;
+    }
+
+    @GetMapping("/dr/event")
+    public String drevent(String msg) {
+        results.forEach(dr -> {
+            dr.setResult("Hello " + msg);
+            results.remove(dr);
+        });
+        return "OK";
+    }
+
+    @GetMapping("/dr/count")
+    public int drcount() {
+        return results.size();
+    }
+}
+```
+setResult가 오기전까지 다른 모든 요청의 응답이 대기(worker thread가 대기하는것도 아니고, servlet thread도 대기하는 것이 아니다. 단지 메모리에 상주할 뿐)
+DefferedResult를 사용해서 간단한 채팅도 구현이 가능할 것 같다.
 
 ResponseBodyEmitter
+HTTP STREAMING .. SSE와 비슷한 개념
 한번의 요청에 여러번 데이터를 나눠서 보내는 ....
+```java
+@GetMapping("/emitter")
+public ResponseBodyEmitter emitter() {
+    ResponseBodyEmitter emitter = new ResponseBodyEmitter();
+    Executors.newSingleThreadExecutor().submit(() -> {
+        IntStream.range(1, 50).forEach(i -> {
+            try {
+                emitter.send("<p>Stream " + i + "</p>");
+                TimeUnit.MILLISECONDS.sleep(100);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    });
+    return emitter;
+}
+```
+
+## 밍 (6) AsyncRestTemplate의 콜백 헬
+# ListenableFuture
+spring 4에 처음 들어간 Future.
+
+
+
+
+# ~~AsyncRestTemplate~~
+deprecated 되었네요 .. ㄷㄷ
