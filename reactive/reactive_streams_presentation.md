@@ -319,13 +319,17 @@ publishOn(); 라는 operator에 scheduler를 인자로 넘겨서 구현.
 
 Typically used for slow publisher(e.g., blocking IO), fast consumers scenarios.
 publisher가 느린 경우, publisher를 별개의 스레드에서 구현(subscribeOn을 별개의 스레드에서...)
+-> onNext()를 호출할 때마다 공이 퍼블리셔에서 섭스크라이버 또는 오퍼레이터로 하나씩 떨어진다.
+-> subscribeOn() 메소드 안의 스케줄러가 퍼블리셔의 역할을 한다.
+
 
 
 ### [reactor.core.publisher.flux.publishOn()](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#publishOn-reactor.core.scheduler.Scheduler-)
 
 Typically used for fast publisher, slow consumers scenarios.
 publisher는 빠르나 subsciber가 느린 경우에 subscriber를 별개의 스레드에서 구현(onNext...둥등의 메소드를 별개의 스레드에서..)
-
+-> 데이터를 받아서 처리하는 subscriber 쪽을 별개의 스레드로 만들어서 데이터를 처리하도록 할 때 사용한다.
+-> 빠른 퍼블리셔, 느린 섭스크라이버 환경에서 사용한다.
 
 스프링 환경에서 스레드 풀을 만들때 여러가지 옵션을 주고 싶은 경우, CustomizableThreadFactory()를 구현하여 Executors.newSingleThreadExcutor() 의 인자로 넘긴다. 
 
