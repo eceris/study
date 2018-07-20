@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
@@ -22,11 +23,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 @Slf4j
-@Controller
+@RestController
 public class PersonController {
 
     public static final RestTemplate REST_TEMPLATE = new RestTemplate();
-    public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(40, new CustomizableThreadFactory("worker"));
+    public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(200, new CustomizableThreadFactory("worker"));
     @Autowired
     private PersonRepository repository;
 
@@ -58,20 +59,19 @@ public class PersonController {
     @GetMapping("/db/find/{idx}")
     List<Person> findAll(@PathVariable String idx) {
         log.info("webmvc findAll count : {}", idx);
-        return repository.findAll();
+        List<Person> all = repository.findAll();
+        log.info("size : {}", all.size());
+        return all;
     }
 
     @GetMapping("/rest/call/{idx}")
-    @ResponseBody
     String restCall(@PathVariable String idx) throws InterruptedException, ExecutionException {
         log.info("rest call count : {}", idx);
 
 //        String url = "http://deploy.daouoffice.co.kr:9000/api/build/companies";
 //        String url = "http://localhost:8082/rest/service/" + idx;
         String url = "http://mobile.terracetech.co.kr/api/login/config";
-        Future<String> submit = EXECUTOR_SERVICE.submit(() -> {
-            return REST_TEMPLATE.getForObject(url, String.class);
-        });
+        Future<String> submit = EXECUTOR_SERVICE.submit(() -> REST_TEMPLATE.getForObject(url, String.class));
         return "Rest call / " + submit.get() + " : " + idx;
 //        return REST_TEMPLATE.getForObject(url, String.class);
     }

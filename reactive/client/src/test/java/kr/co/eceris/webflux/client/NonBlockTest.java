@@ -12,19 +12,19 @@ public class NonBlockTest {
 
     @Test
     public void file() throws InterruptedException {
-        log.info("start Blocking file read");
+        log.info("start NonBlocking file read");
         TestExecutor run = TestExecutor.create(HOST + TestConstant.API_FILE_URI, 200).run();
         while(!run.isDone()) {
             log.info("ing... {}{}", System.lineSeparator(), run);
             TimeUnit.SECONDS.sleep(1);
         }
-        log.info("end Blocking file read : {}", run);
+        log.info("end NonBlocking file read : {}", run);
     }
 
     @Test
     public void db() throws InterruptedException {
         log.info("start NonBlocking db select");
-        TestExecutor run = TestExecutor.create(HOST + TestConstant.API_DB_FIND_URI, 100).run();
+        TestExecutor run = TestExecutor.create(HOST + TestConstant.API_DB_FIND_URI, 1000).run();
         while(!run.isDone()) {
             log.info("ing... {}{}", System.lineSeparator(), run);
             TimeUnit.SECONDS.sleep(1);
@@ -34,12 +34,12 @@ public class NonBlockTest {
 
     @Test
     public void rest() throws InterruptedException {
-        log.info("start Blocking db read");
-        TestExecutor run = TestExecutor.create(HOST + TestConstant.API_REST_URI, 800).run();
+        log.info("start NonBlocking rest call");
+        TestExecutor run = TestExecutor.create(HOST + TestConstant.API_REST_URI, 1000).run();
         while (!run.isDone()) {
             log.info("ing... {}{}", System.lineSeparator(), run);
             TimeUnit.SECONDS.sleep(1);
         }
-        log.info("end Blocking db read : {}", run);
+        log.info("end NonBlocking rest call : {}", run);
     }
 }

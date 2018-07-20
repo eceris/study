@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,7 +47,6 @@ public class PersonController {
     }
 
     @GetMapping("/rest/call/{idx}")
-    @ResponseBody
     Mono<String> restCall(@PathVariable String idx) throws InterruptedException, ExecutionException {
         log.info("rest call count : {}", idx);
 

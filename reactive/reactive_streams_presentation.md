@@ -446,7 +446,7 @@ ListenableFuture << 스프링에서 구현된 객체(callback 형식으로 등�
 CompletableFuture << java 9에 들어간 것(혁명적인 것.... 나중에 따로 볼것)
 
 
-@Async annotation의 스레딩 정책을 설정하는 방법
+@AsyncAnnotation의 스레딩 정책을 설정하는 방법
 ThreadPoolTaskExecutor를 @Bean으로 등록
 default는 SimpleAsyncTaskExecutor는 호출 될 때마다 스레드를 생성하고 삭제
 
