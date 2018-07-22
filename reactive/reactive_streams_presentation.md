@@ -516,3 +516,38 @@ spring 4에 처음 들어간 Future.
 
 # ~~AsyncRestTemplate~~
 deprecated 되었네요 .. ㄷㄷ
+
+#CompletableFuture
+Future를 비동기 작업의 결과를 직접 다룰수 있다. 
+
+complete();
+completeExceptionally(new RuntimeException());
+
+CompletionStage java8에 추가(Promise 라고도 하고 ...)
+-> 하나의 비동기 작업을 수행하고 여ㄱ기에 의존적으로 뭔가를 할수 있도록 하는 것 
+
+
+CompletableFuture.runAsync(() -> {})
+.thenRun(() -> {})
+.thenRun(() -> {})
+.thenRun(() -> {})
+
+
+(모나드!! 함수형 언어에서 나오는 모나드...꼭 볼것)
+CompletableFuture.supplyAsync(() -> s)
+.thenApply(s -> s1)
+.thenApply(s1 -> s2)
+.thenApply(s2 -> s3) // function
+.exceptionally(e -> e)
+.thenAccept(s3 -> {}); //consumer   , .thenAcceptAsync(s3 -> {}); //비동기로 하는데 무조건 thread 정책을 어떻게 할것인가에 대한 내용이 필요함.(ExecutorSerivce)
+
+
+ForkJoinPool.commonPool().shutdown();
+
+thenCompose vs thenApply
+
+thenApply의 리턴값으로 completable future를 받고 싶을 경우 thenCompose()로 할것.
+
+thenCompose() : Stream의 flatMap
+thenApply() : Map 
+으로 생각하면 된다.
