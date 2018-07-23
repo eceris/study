@@ -507,11 +507,33 @@ public ResponseBodyEmitter emitter() {
 }
 ```
 
-## 밍 (6) AsyncRestTemplate의 콜백 헬
 # ListenableFuture
 spring 4에 처음 들어간 Future.
-
-
+```java
+@GetMapping("/call")
+public void callSequentially() {
+    AtomicReference<String> result = null;
+    ListenableFuture<ResponseEntity<String>> fn1 = rest.getForEntity(URL1, String.class);
+    fn1.addCallback(
+            s1 -> {
+                ListenableFuture<ResponseEntity<String>> fn2 = rest.getForEntity(URL2 + "/" + s1.getBody(), String.class);
+                fn2.addCallback(
+                        s2 -> {
+                            ListenableFuture<ResponseEntity<String>> fn3 = rest.getForEntity(URL2 + "/" + s2.getBody(), String.class);
+                            fn3.addCallback(
+                                    s3 -> {
+                                        result.set(s3.getBody());
+                                    }, e3 -> {
+                                        log.error(getClass().getName(), "failed to call [{}], caused : {}", URL3, e3);
+                                    });
+                        }, e2 -> {
+                            log.error(getClass().getName(), "failed to call [{}], caused : {}", URL2, e2);
+                        });
+            }, e1 -> {
+                log.error(getClass().getName(), "failed to call [{}], caused : {}", URL1, e1);
+            });
+}
+```
 
 
 # ~~AsyncRestTemplate~~
@@ -520,6 +542,25 @@ deprecated 되었네요 .. ㄷㄷ
 #CompletableFuture
 Future를 비동기 작업의 결과를 직접 다룰수 있다. 
 
+```java
+@GetMapping("call")
+public void callSequentially() {
+    AtomicReference<String> result = null;
+    CompletableFuture
+            .supplyAsync(() -> {
+                return rest.getForEntity(URL1, String.class);
+            }, es)
+            .thenApplyAsync(s1 -> {
+                return rest.getForEntity(URL2, String.class);
+            }, es)
+            .thenAcceptAsync((s2) -> {
+                System.out.println(s2);
+            }, es)
+            .exceptionally(e -> {
+                return e.getStackTrace();
+            });
+}
+```
 complete();
 completeExceptionally(new RuntimeException());
 
@@ -551,3 +592,104 @@ thenApply의 리턴값으로 completable future를 받고 싶을 경우 thenComp
 thenCompose() : Stream의 flatMap
 thenApply() : Map 
 으로 생각하면 된다.
+
+
+#WebFlux
+기존에 작성했던 코드들을 스프링 5에 맞춰서 진행한다.
+
+pom.xml에서 WebMvc와 WebFlux는 배타적이다. 
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-webmvc</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-webflux</artifactId>
+    </dependency>
+</dependencies>
+```
+
+##WebClient
+~~RestTemplate~~
+
+builder 스타일로 호출하는 방식으로 바뀜..
+```java
+WebClient
+  .builder()
+    .baseUrl("http://localhost:8080")
+    .defaultCookie("cookieKey", "cookieValue")
+    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) 
+  .build()
+  .get()
+  .retrieve(); //보통은 bodyToMono 해서 flat한다. 
+```
+Mono<Mono<String>> 이런 타입으로 나오는 경우가 있는데 이럴 경우에는 flatXXXX를 통해서 한번 flat해준다.
+
+CompletableFuture -> Mono로 바꾸려면
+Mono.fromCompletionStage();
+
+Mono 타입에서 다른 스레드를 태우고 싶은 경우 scheduler를 사용하면 된다. 
+
+#Mono와 block()
+![Image of Mono]
+(https://raw.githubusercontent.com/reactor/reactor-core/v3.1.3.RELEASE/src/docs/marble/mono.png)
+
+```java
+@GetMapping("/person/{id}")
+Mono<Person> person(@PathVariable String id) {
+    Mono<Person> person = repository.findById(id);
+    return person;
+}
+```
+Mono.just는 block이고
+Mono.fromSupplier는 nonblock
+
+
+모노나 플럭스 같은 퍼블리셔는 
+섭스크라이버를 여러개 가질수 있다.
+
+Mono.block() 하는 순간 Mono에 들어있는 value를 얻을수는 있지만 블락이된다 .... 논블라킹이 아님 ;;
+결과적으로 subscribe()와 거의 동일한방식 .. 
+
+#Flux
+![Image of Flux]
+(https://raw.githubusercontent.com/reactor/reactor-core/v3.1.3.RELEASE/src/docs/marble/flux.png)
+
+
+curl 과 tar 툴이 윈도우 10에 포함되었다 !!!(2017년 12월 기준) 
+놀람;;
+```java
+@GetMapping("/people")
+Flux<Person> people() {
+    Flux<Person> people = repository.findAll();
+    return people;
+}
+
+```
+
+Mono의 리스트와 Flux와 결과는 같음 .....
+
+1. 그러나 Mono 리스트를 사용할 경우, Flux가 제공하는 fluent한 operator를 사용할 수 없음...
+2. HttpStream을 사용할 경우에는 Flux가 더 편함.
+@GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+Flux<Event> events();
+위의 경우 chunked로 나누어서 전송된다고 하더라 ...
+
+Flux.delayElements();로 duration을 주면 백그라운드 스레드가 블록킹이 되면서 duration을 ...갖는다 ...
+
+이건 SSE의 개념과 비슷...
+
+
+Flux.zip()
+
+비지니스 로직과 인프라에 관한 FLUX가 동일한  Chain에 있을 경우, 더러워짐 ..
+이걸 ... 해주는 것...지퍼 와 비슷한 개념
+
+Flux.zip(flux, flux).map(tu -> tu.getT1());
+zip하면 튜플이라는 하나의 데이터 집합이 나오고 위의 예는 그중 앞에 데이터를 보낸다는 것. ..
+
+zip은 모든 flux를 묶을수 있다.
+
+보통은 데이터를 zipping하는데 많이 사용함 .....
