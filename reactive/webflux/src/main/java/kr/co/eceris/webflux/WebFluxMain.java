@@ -8,6 +8,8 @@ public class WebFluxMain {
 
     public static void main(String[] args) throws Exception {
         System.setProperty("server.port", "8082");
+        System.setProperty("reactor.ipc.netty.workerCount", "1");
+        System.setProperty("reactor.ipc.netty.pool.maxConnections", "2000");
         SpringApplication.run(WebFluxMain.class, args);
     }
 }
