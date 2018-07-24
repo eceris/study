@@ -317,6 +317,9 @@ publishOn(); 라는 operator에 scheduler를 인자로 넘겨서 구현.
 
 ### [reactor.core.publisher.flux.subscribeOn()](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#subscribeOn-reactor.core.scheduler.Scheduler-)
 
+![Image of SubscribeOn]
+(https://raw.githubusercontent.com/reactor/reactor-core/v3.1.3.RELEASE/src/docs/marble/subscribeon.png)
+
 Typically used for slow publisher(e.g., blocking IO), fast consumers scenarios.
 publisher가 느린 경우, publisher를 별개의 스레드에서 구현(subscribeOn을 별개의 스레드에서...)
 -> onNext()를 호출할 때마다 공이 퍼블리셔에서 섭스크라이버 또는 오퍼레이터로 하나씩 떨어진다.
@@ -326,12 +329,22 @@ publisher가 느린 경우, publisher를 별개의 스레드에서 구현(subscr
 
 ### [reactor.core.publisher.flux.publishOn()](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#publishOn-reactor.core.scheduler.Scheduler-)
 
+![Image of SubscribeOn]
+(https://raw.githubusercontent.com/reactor/reactor-core/v3.1.3.RELEASE/src/docs/marble/publishon.png)
+
 Typically used for fast publisher, slow consumers scenarios.
 publisher는 빠르나 subsciber가 느린 경우에 subscriber를 별개의 스레드에서 구현(onNext...둥등의 메소드를 별개의 스레드에서..)
 -> 데이터를 받아서 처리하는 subscriber 쪽을 별개의 스레드로 만들어서 데이터를 처리하도록 할 때 사용한다.
 -> 빠른 퍼블리셔, 느린 섭스크라이버 환경에서 사용한다.
 
+
+---
+**NOTE**
+
 스프링 환경에서 스레드 풀을 만들때 여러가지 옵션을 주고 싶은 경우, CustomizableThreadFactory()를 구현하여 Executors.newSingleThreadExcutor() 의 인자로 넘긴다. 
+
+---
+
 
 # Flux
 reactor.core.publisher.Flux 패키지에는 여러 operator들을 사용할 수 있도록 구현되어있다.
@@ -346,12 +359,9 @@ Flux.interval() --> operator 설명
 Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate();
 를 구현하면 정해진 rate로 계속해서 수행하는 executor
 
-# Future...는 뭘까요?
-
 # Future
 Future.get(); //blocking
 
-Future를 object로 만든 것 : FutureTask
 
 ```java
 package com.eceris.reactive;
@@ -382,6 +392,7 @@ public class FutureEx {
 }
 ```
 
+Future를 object로 만든 것 : FutureTask
 
 FutureTask를 익명클래스로 override 한 경우 
 ```java
@@ -423,12 +434,8 @@ Future를 이용해서 결과를 받아오는 것(but, blocking이면서 try cat
 Callback 을 직접 구현하여 만드는 것.(비지니스로직과 인프라로직이 혼재되어있는 문제가 발생 ....)
 
 
-
-
-Spring 에서의 비동기 
-@EnableAsync를 application context에 알려주고
-
-@Async를 메소드 레벨에 작성하여 사용
+## Spring 에서의 비동기 
+@Async를 메소드 레벨에 작성하여 사용(@EnableAsync)
 ```java
 
 @Async
@@ -539,8 +546,8 @@ public void callSequentially() {
 # ~~AsyncRestTemplate~~
 deprecated 되었네요 .. ㄷㄷ
 
-#CompletableFuture
-Future를 비동기 작업의 결과를 직접 다룰수 있다. 
+# CompletableFuture
+비동기 작업의 결과(Future)를 직접 다룰수 있다. 
 
 ```java
 @GetMapping("call")
@@ -561,11 +568,9 @@ public void callSequentially() {
             });
 }
 ```
-complete();
-completeExceptionally(new RuntimeException());
 
 CompletionStage java8에 추가(Promise 라고도 하고 ...)
--> 하나의 비동기 작업을 수행하고 여ㄱ기에 의존적으로 뭔가를 할수 있도록 하는 것 
+-> 하나의 비동기 작업을 수행하고 여기에 의존적으로 뭔가를 할수 있도록 하는 것 
 
 
 CompletableFuture.runAsync(() -> {})
@@ -583,18 +588,15 @@ CompletableFuture.supplyAsync(() -> s)
 .thenAccept(s3 -> {}); //consumer   , .thenAcceptAsync(s3 -> {}); //비동기로 하는데 무조건 thread 정책을 어떻게 할것인가에 대한 내용이 필요함.(ExecutorSerivce)
 
 
-ForkJoinPool.commonPool().shutdown();
-
 thenCompose vs thenApply
-
 thenApply의 리턴값으로 completable future를 받고 싶을 경우 thenCompose()로 할것.
 
 thenCompose() : Stream의 flatMap
-thenApply() : Map 
-으로 생각하면 된다.
+thenApply() : Stream의 Map 
 
-
-#WebFlux
+# WebFlux
+![Image of WebFlux stack]
+(https://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/html/images/webflux-overview.png)
 기존에 작성했던 코드들을 스프링 5에 맞춰서 진행한다.
 
 pom.xml에서 WebMvc와 WebFlux는 배타적이다. 
@@ -611,7 +613,7 @@ pom.xml에서 WebMvc와 WebFlux는 배타적이다.
 </dependencies>
 ```
 
-##WebClient
+# WebClient
 ~~RestTemplate~~
 
 builder 스타일로 호출하는 방식으로 바뀜..
@@ -632,7 +634,9 @@ Mono.fromCompletionStage();
 
 Mono 타입에서 다른 스레드를 태우고 싶은 경우 scheduler를 사용하면 된다. 
 
-#Mono와 block()
+# Mono
+[Mono](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html)
+
 ![Image of Mono]
 (https://raw.githubusercontent.com/reactor/reactor-core/v3.1.3.RELEASE/src/docs/marble/mono.png)
 
@@ -643,6 +647,8 @@ Mono<Person> person(@PathVariable String id) {
     return person;
 }
 ```
+0..1 의 데이터를 다루는 Reactive Stream 구현체(Reactive Streams Publisher contract를 확장)
+
 Mono.just는 block이고
 Mono.fromSupplier는 nonblock
 
@@ -653,13 +659,14 @@ Mono.fromSupplier는 nonblock
 Mono.block() 하는 순간 Mono에 들어있는 value를 얻을수는 있지만 블락이된다 .... 논블라킹이 아님 ;;
 결과적으로 subscribe()와 거의 동일한방식 .. 
 
-#Flux
+# Flux
+[Flux](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html)
+
 ![Image of Flux]
 (https://raw.githubusercontent.com/reactor/reactor-core/v3.1.3.RELEASE/src/docs/marble/flux.png)
 
+0..N 의 데이터를 다루는 Reactive Stream 구현체(Reactive Streams Publisher contract를 확장)
 
-curl 과 tar 툴이 윈도우 10에 포함되었다 !!!(2017년 12월 기준) 
-놀람;;
 ```java
 @GetMapping("/people")
 Flux<Person> people() {
@@ -669,7 +676,8 @@ Flux<Person> people() {
 
 ```
 
-Mono의 리스트와 Flux와 결과는 같음 .....
+
+Mono의 리스트와 Flux와 내부적으로는 같다.
 
 1. 그러나 Mono 리스트를 사용할 경우, Flux가 제공하는 fluent한 operator를 사용할 수 없음...
 2. HttpStream을 사용할 경우에는 Flux가 더 편함.
@@ -679,17 +687,13 @@ Flux<Event> events();
 
 Flux.delayElements();로 duration을 주면 백그라운드 스레드가 블록킹이 되면서 duration을 ...갖는다 ...
 
-이건 SSE의 개념과 비슷...
+---
+**NOTE**
+
+curl 과 tar 툴이 윈도우 10에 포함되었다 !!!
+놀람;;
+
+---
 
 
-Flux.zip()
 
-비지니스 로직과 인프라에 관한 FLUX가 동일한  Chain에 있을 경우, 더러워짐 ..
-이걸 ... 해주는 것...지퍼 와 비슷한 개념
-
-Flux.zip(flux, flux).map(tu -> tu.getT1());
-zip하면 튜플이라는 하나의 데이터 집합이 나오고 위의 예는 그중 앞에 데이터를 보낸다는 것. ..
-
-zip은 모든 flux를 묶을수 있다.
-
-보통은 데이터를 zipping하는데 많이 사용함 .....
