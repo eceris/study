@@ -667,7 +667,7 @@ Mono.block() 하는 순간 Mono에 들어있는 value를 얻을수는 있지만 
 
 ![Image of Flux]
 (https://raw.githubusercontent.com/reactor/reactor-core/v3.1.3.RELEASE/src/docs/marble/flux.png)
-
+[![IMAGE ALT TEXT HERE](https://raw.githubusercontent.com/reactor/reactor-core/v3.1.3.RELEASE/src/docs/marble/flux.png)](https://raw.githubusercontent.com/reactor/reactor-core/v3.1.3.RELEASE/src/docs/marble/flux.png)
 0..N 의 데이터를 다루는 Reactive Stream 구현체(Reactive Streams Publisher contract를 확장)
 
 ```java
