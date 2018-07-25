@@ -318,7 +318,7 @@ publishOn(); 라는 operator에 scheduler를 인자로 넘겨서 구현.
 ### [reactor.core.publisher.flux.subscribeOn()](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#subscribeOn-reactor.core.scheduler.Scheduler-)
 
 ![Image of SubscribeOn]
-(study/reactive/subscribeon.png)
+(https://github.com/eceris/study/blob/master/reactive/subscribeon.png)
 
 Typically used for slow publisher(e.g., blocking IO), fast consumers scenarios.
 publisher가 느린 경우, publisher를 별개의 스레드에서 구현(subscribeOn을 별개의 스레드에서...)
