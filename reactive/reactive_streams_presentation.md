@@ -317,6 +317,7 @@ publishOn(); 라는 operator에 scheduler를 인자로 넘겨서 구현.
 
 ### [reactor.core.publisher.flux.subscribeOn()](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#subscribeOn-reactor.core.scheduler.Scheduler-)
 
+<img src="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html">
 ![Image of SubscribeOn]
 (./subscribeon.png?raw=true)
 
