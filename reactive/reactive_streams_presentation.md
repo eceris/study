@@ -318,7 +318,7 @@ publishOn(); 라는 operator에 scheduler를 인자로 넘겨서 구현.
 ### [reactor.core.publisher.flux.subscribeOn()](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#subscribeOn-reactor.core.scheduler.Scheduler-)
 
 ![Image of SubscribeOn]
-(https://raw.githubusercontent.com/reactor/reactor-core/v3.1.3.RELEASE/src/docs/marble/subscribeon.png)
+(./subscribeon.png)
 
 Typically used for slow publisher(e.g., blocking IO), fast consumers scenarios.
 publisher가 느린 경우, publisher를 별개의 스레드에서 구현(subscribeOn을 별개의 스레드에서...)
@@ -330,7 +330,7 @@ publisher가 느린 경우, publisher를 별개의 스레드에서 구현(subscr
 ### [reactor.core.publisher.flux.publishOn()](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#publishOn-reactor.core.scheduler.Scheduler-)
 
 ![Image of SubscribeOn]
-(https://raw.githubusercontent.com/reactor/reactor-core/v3.1.3.RELEASE/src/docs/marble/publishon.png)
+(./publishon.png)
 
 Typically used for fast publisher, slow consumers scenarios.
 publisher는 빠르나 subsciber가 느린 경우에 subscriber를 별개의 스레드에서 구현(onNext...둥등의 메소드를 별개의 스레드에서..)
@@ -453,9 +453,13 @@ ListenableFuture << 스프링에서 구현된 객체(callback 형식으로 등�
 CompletableFuture << java 9에 들어간 것(혁명적인 것.... 나중에 따로 볼것)
 
 
-@AsyncAnnotation의 스레딩 정책을 설정하는 방법
-ThreadPoolTaskExecutor를 @Bean으로 등록
+**NOTE**
+
+스프링에서 @Async 의 스레드 정책은..
+ThreadPoolTaskExecutor를 @Bean으로 등록 하고 설정
 default는 SimpleAsyncTaskExecutor는 호출 될 때마다 스레드를 생성하고 삭제
+
+---
 
 Thread는 block 되면 CPU 자원을 많이 차지하는 이유는 ContextSwitching 때문.
 Thread 갯수를 늘리는 것도 결국은 ContextSwitching이 많아지는 것이기 때문에, 속도가 느려질 수 있다.
@@ -491,10 +495,9 @@ public class Application {
 }
 ```
 setResult가 오기전까지 다른 모든 요청의 응답이 대기(worker thread가 대기하는것도 아니고, servlet thread도 대기하는 것이 아니다. 단지 메모리에 상주할 뿐)
-DefferedResult를 사용해서 간단한 채팅도 구현이 가능할 것 같다.
+
 
 ResponseBodyEmitter
-HTTP STREAMING .. SSE와 비슷한 개념
 한번의 요청에 여러번 데이터를 나눠서 보내는 ....
 ```java
 @GetMapping("/emitter")
@@ -515,7 +518,7 @@ public ResponseBodyEmitter emitter() {
 ```
 
 # ListenableFuture
-spring 4에 처음 들어간 Future.
+Spring 4에 처음 들어간 Future.(callback 지원)
 ```java
 @GetMapping("/call")
 public void callSequentially() {
@@ -541,7 +544,6 @@ public void callSequentially() {
             });
 }
 ```
-
 
 # ~~AsyncRestTemplate~~
 deprecated 되었네요 .. ㄷㄷ
@@ -596,7 +598,7 @@ thenApply() : Stream의 Map
 
 # WebFlux
 ![Image of WebFlux stack]
-(https://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/html/images/webflux-overview.png)
+(./webflux-overview.png)
 기존에 작성했던 코드들을 스프링 5에 맞춰서 진행한다.
 
 pom.xml에서 WebMvc와 WebFlux는 배타적이다. 
@@ -638,7 +640,7 @@ Mono 타입에서 다른 스레드를 태우고 싶은 경우 scheduler를 사�
 [Mono](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html)
 
 ![Image of Mono]
-(https://raw.githubusercontent.com/reactor/reactor-core/v3.1.3.RELEASE/src/docs/marble/mono.png)
+(./mono.png)
 
 ```java
 @GetMapping("/person/{id}")
@@ -663,7 +665,7 @@ Mono.block() 하는 순간 Mono에 들어있는 value를 얻을수는 있지만 
 [Flux](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html)
 
 ![Image of Flux]
-(https://raw.githubusercontent.com/reactor/reactor-core/v3.1.3.RELEASE/src/docs/marble/flux.png)
+(./flux.png)
 
 0..N 의 데이터를 다루는 Reactive Stream 구현체(Reactive Streams Publisher contract를 확장)
 
