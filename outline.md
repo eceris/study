@@ -48,3 +48,18 @@ static obect는 heap으로 옮겨서 GC 대상이 최대한 될 수 있도록 �
 기타 정말 수정이 될 일 없어보는 정보는
 Native(Metaspace) 로 몰아넣고 사이즈는 자동적으로 조정되도록 개선 되었다고 정리하면 되겠습니다.
 
+
+
+# JWT
+기존에 session으로 동작하던 인증방식이 무겁다고 생각, 예를 들면 메모리에 담게되면 어쨋든 부하...또, 확장을 위해 여러 도메인에서 서비스하기 위해서는 stateless 한 토큰이 좋은 방법이라고 생각.
+간단한 서비스를 만들때에는 웹표준 RFC7519 를 구현한 JWT가 심플. 
+
+Cookies에 session id를 담아서 인증하는 기존의 방식은 CSRF(Cross-site request forgery, CSRF, XSRF) 공격에 취약한 반면, 토큰기반의 JWT는 CSRF공격이 불가능하며 CORS(Cross-Origin Resource Sharing) 문제를 해결 할 수 있다.
+
+JWT는 총 세가지 영역으로 나뉨. 
+
+1. Header – 해당 토큰이 어떤 암호화 알고리즘을 통해 암호화되었는지를 정의한다.  alg 라는 세부 필드로 표현된 알고리즘이 암호화에 적용된 알고리즘을 나타낸다.
+2. Payload – 실제 전달하고자 하는 메시지 Body를 나타낸다.
+3. Signature – 전달된 메시지에 대한 Signature 값을 나타낸다.  말 그대로 signature 값이 포함되어 있으며, 해당 값을 인식하기 위해서는 보낸쪽과 받는쪽에서 합의된 키 값을 가지고 Header에서 정의된 암호화 알고리즘을 통해 검증할 수 있다.
+
+요즘 많이 사용하는 oAuth도 이와 비슷한 토큰 방식의 인증과 권한을 ...
