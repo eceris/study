@@ -49,6 +49,20 @@ static obect는 heap으로 옮겨서 GC 대상이 최대한 될 수 있도록 �
 Native(Metaspace) 로 몰아넣고 사이즈는 자동적으로 조정되도록 개선 되었다고 정리하면 되겠습니다.
 
 
+# Java 1.8
+- 함수형 프로그래밍(람다, functional interface)
+- Stream api 추가
+- try-with-resources 강화
+- 인터페이스에 default 및 static 메소드
+
+# Java 9
+- Java Module화(Jigsaw)
+- 인터페이스에 private 메소드 
+- Flow api(Reactive stream)
+- Collections 에 팩토리 메소드 추가
+
+# Java 10
+- 로컬 변수 형식 추론 (var, val)
 
 # JWT
 기존에 session으로 동작하던 인증방식이 무겁다고 생각, 예를 들면 메모리에 담게되면 어쨋든 부하...또, 확장을 위해 여러 도메인에서 서비스하기 위해서는 stateless 한 토큰이 좋은 방법이라고 생각.
