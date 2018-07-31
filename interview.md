@@ -70,15 +70,16 @@ opensession 으로 인한 태랜잭션 ...
 무슨 질문이 와도 내가 한것들로 회기 하도록.....ㅋㅋㅋ
 
 
+객체지향 5법칙 SOLID
+SRP (단일책임의 원칙: Single Responsibility Principle)
 
+OCP (개방폐쇄의 원칙: Open Close Principle)
 
+LSP (리스코브 치환의 원칙: The Liskov Substitution Principle)
 
+ISP (인터페이스 분리의 원칙: Interface Segregation Principle)
 
-
-
-
-
-
+DIP (의존성역전의 원칙: Dependency Inversion Principle)
 
 
 
@@ -135,7 +136,7 @@ filter
 ## 왜 지원하게 되었는가
 1. 다른 도메인에서 잘 할 수 잇다는 확신, 
 1. 잘 성장하고 있는가에 대한 의문을 확인하고
-3. 마지막으로 한달 전에 어느 블로그를 봤는데 ... 현재 관심사인 reactive stack에 대한 심화내용을 담고 잇었다 ... 근데 그 글이 카카오뱅크 출신의 어떤 개발자가 쓴 글이더라 .... 그래서 그런 활동을 하고 있다는 것을 보고 욕심이 생겼다.  => 
+3. 마지막으로 한달 전에 어느 블로그를 봤는데 ... 현재 관심사인 reactive stack에 대한 내용을 담고 잇었다 ... 근데 그 글이 카카오뱅크 출신의 어떤 개발자가 쓴 글이더라 .... 그래서 그런 활동을 하고 있다는 것을 보고 욕심이 생겼다.  => 
 
 
 ## 왜 다른 지원자가 아니라, 당신을 뽑아야 하는가
