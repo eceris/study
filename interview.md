@@ -56,7 +56,7 @@ Not Only Sql 이라고 하기도 하고, Not Sql , sql 이 아니다 라고 얘�
 15. 쓰레드 덤프 뜨는 법 
 jstack -l <pid>
 16. heap 덤프 뜨는 법
-jamap -heap <pid>
+jmap -heap <pid>
 17. 네트워크
 빅데이터나 뭐 이런ㄱ것들. ..하둡 뭐 이런거 ....
 restful api가 뭐냐
