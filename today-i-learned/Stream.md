@@ -85,4 +85,28 @@ stream.parallel().map(e -> { if (seen.add(e)) return 0; else return e; })...
 ## Side-Effects
 스트림 연산으로 향하는 매개변수 안에 사이드 이팩트는 보통 권장하지 않는데, 그것들이 자주 statelessness 요구사항의 알수없는 위협 혹은 thread-safety에 대한 위협이 되기 때문이다.
 
-만약 매개변수들이 사이드 이펙트를 갖고 있다면, 
+
+만약 매개변수들이 사이드 이펙트를 갖고 있고, 명시적으로 stated 하지 않는다면, 다른 스레드를 향한 사이드 이펙트에 대한 가시성을 보장하지 않고, 같은 스레드의 스트림 파이프라인에 같은 요소에 대한 연산을 보장하지 않는다. 게다가, 이러한 효과의 순서는 놀라운 일일 수 있다. 파이프라인이 스트림 소스의 방문 순서와 일치하는 결과를 생성하도록 제약을 받는 경우에도, 주어진 요소를 위해 실행되는 어떠한 매개변수나 개별 요소에 적용되는 매퍼함수의 순서를 보장하지 않는다. 
+```java
+IntStream.range(0,5).parallel().map(x -> x*2).toArray() 
+
+[0, 2, 4, 6, 8] // must produce
+```
+사이드이팩트를 사용하려고 유혹되는 많은 계산들은 더욱 안전하고 효과적으로 표현될 수 있다. 
+
+mutable<sup>변하기 쉬운</sup> accumulators 대신에 [reduction](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#Reduction)과 같은 것을 사용하여 사이드이펙트를 갖고 있는 많은 계산들이 더욱 안전하고 효과적으로 표현될 수 있다. 그러나 디버깅의 목적으로사용되는 println()과 같은 사이드 이팩트들은 보통 문제가 없다. forEach() 나 peek() 와 같은 몇개의 스트림 연산은 side-effects를 통해 연산하게 되는데 주의해서 사용해야 한다.
+
+사이드 이펙트를 부적절하게 사용하는 스트림 파이프 라인을 변환하지 않는 방법으로, 아래의 코드는 정규식과 매칭되는 string을 스트림에서 찾아서 list에 넣는 예이다.
+```java
+ArrayList<String> results = new ArrayList<>();
+     stream.filter(s -> pattern.matcher(s).matches())
+           .forEach(s -> results.add(s));  // Unnecessary use of side-effects!
+```
+위의 코드는 불필요하게 side-effects를 사용한다. 만약 이것을 병렬로 실행했다면, thread-safe하지 않은 ArrayList가 오류를 일으키고, 그것을 보완하기 위해 동기화를 추가하려면 경합이 발생하여 병렬처리의 이득을 약화 시킨다. 게다가 여기서 사용한 side-effects는 완벽하게 불필요하다. forEach ()는보다 안전하고 효율적이며 병렬 처리가 더 용이 한 축소 작업으로 간단히 대체 될 수 있습니다.
+```java
+List<String>results =
+         stream.filter(s -> pattern.matcher(s).matches())
+               .collect(Collectors.toList());  // No side-effects!
+```
+
+## Ordering
