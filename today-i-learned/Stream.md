@@ -110,3 +110,44 @@ List<String>results =
 ```
 
 ## Ordering
+스트림은 마주치는<sup>encounter</sup> 순서가 있을 수도, 없을 수도 있다. 스트림에 마주치는<sup>encounter</sup> 순서가 있는지 여부는 데이터 소스와 중간 연산자<sup>intermediate operations</sup>에 따라 다르다. 특정 스트림 소스(List나 Array 같은)는 본질적으로 순서가 지정되며 HashSet과 같은 애들은 순서가 업사. sorted() 와 같은 몇몇 중간 연산자는 순서가 지정되지 않는 스트림에 순서를 지정할 수 있으며, 다른 연산자들은 순서가 지정된 스트림을 BaseStream.unordered() 와 같이 순서를 지정하지 않은 상태로 렌더링할 수 있다. 게다가 forEach()와 같은 몇몇 terminal 연산자는 순서를 무시할 수 있다. 
+만약 스트림이 정렬되었다면, 대부분의 연산자자들은 encounter 순서대로 연산한다. 만약 스트림의 소스가 [1, 2, 3]을 포함한 list라면 map(x -> x\*2)의 결과는 [2, 4, 6]이 될것이다. 그러나 소스의 encounter 순서가 정의되어있지 않으면 [2, 4, 6] 값의 순열이 유효한 결과가 된다.
+
+순차적인 스트림의 경우, encounter 순서의 유무는 성능에 영향을 주지 않으며, 결과에만 영향을 준다. 만약 스트림이 정렬되었다면, identical한 소스의 스트림 파이프라인이 반복적으로 실행되는 경우, 결과도 identical하다. 만약 정렬되어 있지 않다면, 다른 결과를 생성한다. 
+
+병렬 스트림의 경우, 순서를 보장하는 조건을 완화하면 더 효율적으로 실행한다. 요소이 순서가 적절하지 않은 경우 distinct()나 Collectors.groupingBy()와 같은 aggregate 연산자를 이용하여 연산을 효율적으로 구현할 수 있다. 비슷하게 limit()와 같은 순서를 보장하기 위한 연산자는 병렬처리의 이점을 약화 시킨다. 스트림에 encounter 순서가 있지만, 중요하지 않은 경우에 unsorted() 로 스트림을 명시적으로 정렬해제 하면, 일부 stateful한 연산이나 terminal 연산의 병렬 성능이 향상될 수도 있다. 그러나, 대부분의 스트림 파이프라인은 순서의 제약조건에서도 효율적으로 병렬처리 한다.
+
+## Reduction operations
+Reduction 연산<sup>fold 라고도 함</sup>은 입력을 취합하여 숫자의 합 혹은 최대값을 찾거나 요소를 목록에 누적하는 등의 결합작업을 반복적으로 적용하여 단일 요약 결과로 결합한다. 스트림 클래스에는 reduce(), collect(), sum(), max() 또는 count()와 같은 특별한 함수들이 있다. 물론 이러한 작업은 아래와 같은 간단한 순차루프로 쉽게 구현할 수 있다.
+```java
+int sum = 0;
+for (int x : numbers) {
+	sum += x;
+}
+```
+그러나, 위의 예제와 같은 mutative 연산보다 reduction 연산을 선호하는 여러 이유가 있다. 
+
+reduction 연산이 "좀 더 추상적" 이라는 것 뿐 아니라 요소를 처리하는 데 사용되는 함수가 연관적이고 stateless 인 경우, 본질적으로 병렬처리가 가능하다는 것이다. 예를 들어 합계를 찾고자하는 숫자의 흐름이 주어지면 다음과 같이 쓸 수 있습니다.
+```java
+int sum = numbers.stream().reduce(0, (x,y) -> x+y);
+```
+or
+```java
+int sum = numbers.stream().reduce(0, Integer::sum);
+```
+
+이러한 reduction 연산들은 별다른 수정없이 병렬로 안전하게 수행된다.
+```java
+int sum = numbers.parallelStream().reduce(0, Integer::sum);
+```
+
+병렬로 Reduction 하는 작업은 잘 수행된다. Language가 parallel for-each 구조를 갖고 있다고 하더라도, mutative 연산에 대한 접근은 thread-safe한 업데이트를 제공하기 위해 개발자가 신경써야 하는데, 이러한 작업은 병렬처리의 이점을 살리지 못한다. 대신 reduce()함수를 사용하면, reduction 작업을 병렬처리하는 부담이 제거되므로 라이브러리는 추가 동기화가 필요 없는 효율적인 병렬 구현을 제공할 수 있다. 
+
+위에서 보여진 위젯 예제는 루프가 대량 작업으로 대체되는 다른 작업과 축소가 어떻게 결합되는지 보여준다. 위젯이 getWidget() 메소드가 있는 위젯 객체의 집합인 경우, 아래와 같이 가장 큰 위젯을 찾을 수 있다.
+```java
+OptionalInt heaviest = widgets.parallelStream()
+                           .mapToInt(Widget::getWeight)
+                           .max();
+```
+
+작성중.......
