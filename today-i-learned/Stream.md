@@ -127,7 +127,7 @@ for (int x : numbers) {
 ```
 그러나, 위의 예제와 같은 mutative 연산보다 reduction 연산을 선호하는 여러 이유가 있다. 
 
-reduction 연산이 "좀 더 추상적" 이라는 것 뿐 아니라 요소를 처리하는 데 사용되는 함수가 연관적이고 stateless 인 경우, 본질적으로 병렬처리가 가능하다는 것이다. 예를 들어 합계를 찾고자하는 숫자의 흐름이 주어지면 다음과 같이 쓸 수 있습니다.
+reduction 연산이 "좀 더 추상적" 이라는 것 뿐 아니라 요소를 처리하는 데 사용되는 함수가 연관적이고 stateless 인 경우, 본질적으로 병렬처리가 가능하다는 것이다. 예를 들어 합계를 찾고자하는 숫자의 흐름이 주어지면 아래와 같이 쓸 수 있다.
 ```java
 int sum = numbers.stream().reduce(0, (x,y) -> x+y);
 ```
@@ -149,5 +149,122 @@ OptionalInt heaviest = widgets.parallelStream()
                            .mapToInt(Widget::getWeight)
                            .max();
 ```
+좀 더 일반적인 형태로, <U> Type의 결과를 생성하는 <T> Type의 요소에 대한 reduce 연산은 세 개의 매개 변수를 필요로합니다.
 
-작성중.......
+```java
+ <U> U reduce(U identity,
+              BiFunction<U, ? super T, U> accumulator,
+              BinaryOperator<U> combiner);
+```
+identity 요소는 reduction을 위한 초기 seed value 이며, 입력이 없을 경우 default value 이다. accumulator 함수는 partial result와 다음 요소를 가져와 새로운 partial result를 생성한다. combiner Operator 는 두 개의 partial result를 결합하여 새로운 partial result를 생성한다. 입력이 나뉘어져 있고 부분 accumulation이 각각의 입력을 계산하여 최종 결과를 만들기 위해 combiner는 병렬 reductions에 필수이다.
+
+더욱 formal하게, identity 값은 combiner 함수에서 유일해야 한다. 이것은 모든 u에 대해  combiner.apply(identity, u) 는 u와 같다. 게다가 combiner 함수는 연관적이어야하며, accumulator와 호환 가능해야 한다. 모든 u와 t에 대해 combiner.apply (u, accumulator.apply (identity, t))는 accumulator.apply (u, t)와 같아야한다. 
+
+세개의 매겨변수 형식은 두개의 매개 변수 형식에 accumulation 스텝을 매핑 단계에 통합해서 일반화 한 것이다. 보다 일반적인 방식을 사용하여 위 예제를 다시 작성하면.
+
+```java
+int sumOfWeights = widgets.stream()
+                           .reduce(0,
+                                   (sum, b) -> sum + b.getWeight())
+                                   Integer::sum);
+```
+명시적으로 map-reduce를 선언 하는 것이 보다 읽기 쉽다. 일반화된 form은 매핑과 단일 함수로 결합하여 최적화 될 수 있는 중요한 작업을 위해 제공된다.
+
+## Mutable reduction
+변경 가능한 reduction 작업은 스트림의 요소를 처리할 때, 입력된 요소들을 변경가능한 결과 container<sup>Collection or StringBuilder 와 같은...</sup> 에 축적한다. 
+만약 하나의 긴 string을 stream으로 받거나 concatenate 하기를 바란다면, 우리는 아래와 같은 reduction 연산으로 처리할 수 있다.
+
+```java
+String concatenated = strings.reduce("", String::concat);
+```
+위의 코드는 병렬로 동작할 수 있는데, 생각 처럼 performance에 이득을 얻지 못한다. 이러한 구현은 많은 문자열 copying을 수행하며 실행 시간은 O(N^2)이 걸린다. 조금 더 성능관점에서 접근한다면 StringBuilder<sup>mutable container</sup>를 사용하여 문자들을 accumulate 할 수 있다. 위의 코드를 일반적인 reduction과 마찬가지로 병렬로 수행할 수 있는 방법이 있다.
+
+mutable reduction 연산은 collect()라는 것인데 이것은 Collection과 같은 container에 결과를 원하는데로 모아준다. collect() 연산은 3가지 함수가 필요한데,
+
+1. supplier : 결과 container의 새로운 인스턴스 생성을 위해
+2. accumulator : 입력된 요소를 결과 conatiner에 모으기 위해
+3. combining : 결과 container를 다른 container에 merge 하기 위해. 
+이러한 form은 일반적인 reduction 연산과 매우 비슷하다. 
+```java
+<R> R collect(Supplier<R> supplier,
+       BiConsumer<R, ? super T> accumulator,
+       BiConsumer<R, R> combiner);
+```
+reduce()연산과 마찬가지로 collect()라는 추상적인 방법을 사용하면 병렬처리가 직접적으로 가능하다. accumulate와 combine이 적절한 요구사항대로 구현되면, partial 결과들을 병렬로 축적하여 결합 할 수 있다. 예를 들면, 스트림에 있는 요소의 String 을 ArrayList에 모으기 위해 for-each를 사용해서 작성할 수 있다.
+```java
+ArrayList<String> strings = new ArrayList<>();
+for (T element : stream) {
+ strings.add(element.toString());
+}
+```
+또는 이렇게 병렬화 할수 있다.
+```java
+ArrayList<String> strings = stream.collect(() -> new ArrayList<>(),
+                                    (c, e) -> c.add(e.toString()),
+                                    (c1, c2) -> c1.addAll(c2));
+```
+
+또는, accumulator함수에서 mapping 연산을 땡겨오면 더 간결하게 표현 할 수 있다.
+```java
+List<String> strings = stream.map(Object::toString)
+                              .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+```
+여기에 supplier는 ArrayList의 생성자인데, accumulator는 요소를 stringify 해서 ArrayList에 모으고, combiner는 addAll 을 이용해 다른 container로 복사했다. 
+
+collect에 세가지 --supplier, accumulator, combiner-- 는 타이트하게 응집되어있다. 우리는 Collector에서 추상화된 연산을 사용할 수 있다. 
+
+```java
+List<String> strings = stream.map(Object::toString)
+                          .collect(Collectors.toList());
+```
+
+mutable reduction들을 Collector에 패키징하는 것은 다른 이점이 있다. 
+- composability : Collector 클래스는 collectors 를 위한 predefind 된 여러 팩토리를 포함한다.(하나의 collector를 다른 것으로 변환하는 combinator를 포함.) 예를 들면, 아래와 같이 직원 스트림의 급여합계를 계산하는 collector이다.
+```java
+Collector<Employee, ?, Integer> summingSalaries
+     = Collectors.summingInt(Employee::getSalary);
+```
+
+groupingBy를 사용하여 부서 별로 합을 생성할 수 있다.
+```java
+Map<Department, Integer> salariesByDept
+     = employees.stream().collect(Collectors.groupingBy(Employee::getDepartment,
+                                                        summingSalaries));
+```
+regular reduction 연산과 마찬가지로 collect() 연산은 병렬화 할 수 있다. 부분적으로 accumulated 된 결과의 경우 빈 결과 container와 결합해도 동일한 결과가 생성된다. 즉, 부분적으로 accumulate된 결과값 p는 combiner.apply(p, supplier.get()) 과 동일해야 한다.
+
+또한, 계산이 분할되지만 동일한 결과를 산출해야 한다. 어떠한 입력 요소 t1, t2와 결과 값 r1, r2는 계산의 결과로 반드시 같아야 한다.
+
+```java
+A a1 = supplier.get();
+accumulator.accept(a1, t1);
+accumulator.accept(a1, t2);
+R r1 = finisher.apply(a1);  // result without splitting
+
+A a2 = supplier.get();
+accumulator.accept(a2, t1);
+A a3 = supplier.get();
+accumulator.accept(a3, t2);
+R r2 = finisher.apply(combiner.apply(a2, a3));  // result with splitting
+```
+
+이것은 일반적으로 Object.equals(Object)와 동일하며, 몇몇 경우에는 순서의 차이를 위해 동등성이 완화 될 수 있다.
+
+## Reduction, concurrency, and ordering
+
+작성중...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
