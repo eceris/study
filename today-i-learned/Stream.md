@@ -252,19 +252,49 @@ R r2 = finisher.apply(combiner.apply(a2, a3));  // result with splitting
 
 ## Reduction, concurrency, and ordering
 
-작성중...
+Map을 생성하는 collect()와 같은 복잡한 reduction 연산이 있는 경우
+```java
+Map<Buyer, List<Transaction>> salesByBuyer
+      = txns.parallelStream()
+              .collect(Collectors.groupingBy(Transaction::getBuyer));
+```
+
+병렬로 위의 연산을 실행하는 것은 비생산적이다. combining 하는 연산이 실제로 몇몇 Map 구현체에서 비용이 많이 들기 때문이다. 
+
+그러나 [ConcurrentHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html) 과 같은 동시에 수정할 수 있는 결과 container가 reduction 연산에 사용되었다고 가정하자. 이 경우에, accumulator의 병렬 호출은 같은 공유된 결과 container에 동시에 보관할 수 있으므로 combiner가 병합을 위해 별도의 result container를 갖을 필요가 없다. 이것은 잠재적으로 병렬 연산의 성능을 향상시킨다. 이것을 **concurrent reduction**이라고 부른다.
+
+concurrent reduction을 지원하는 Collector는 Collector.Characteristics.CONCURRENT 특성으로 마킹되어있다. 그러나 concurrent collection도 좋지 않은 단점을 갖고 있다. 만약 여러개의 쓰레드가 공유된 container에 동시에 결과를 저장한다면, 결과가 저장되는 순서는 비 결정적이다. 결과적으로 concurrent reduction은 처리되는 순서가 중요하지 않은 스트림에서만 사용할 수 있다. Stream.collect(Collector); 는 concurrent reduction을 아래와 같은 경우에만 구현할 수 있다.
+
+1. stream이 병렬일 때
+2. collector가 Collector.Characteristics.CONCURRENT 특성을 가질때
+3. 스트림이 정렬되어있지 않거나, collector가 Collector.Characteristics.UNORDERED 특성을 가질때
+
+BaseStream.unordered() 메소드로 스트림이 정렬되지 않음을 보장할 수 있다. 예를 들면...
+
+```java
+Map<Buyer, List<Transaction>> salesByBuyer
+   = txns.parallelStream()
+         .unordered()
+         .collect(groupingByConcurrent(Transaction::getBuyer));
+```
+(Collectors.groupingByConcurrrent()는 groupingBy가 동시접근 가능한 것과 같다.)
+
+## Associativity
+연산자나 함수 op 는 다음과 같은 경우 상호 연관된다.
+
+  (a op b) op c == a op (b op c)
+
+이것을 네가지 용어로 확장하면 병렬 evaluation의 중요성을 볼수 있게 된다.
+
+     a op b op c op d == (a op b) op (c op d)
 
 
+또한 병렬로 (a op b) 와 (c op d)를 평가할 수 있고, 결과 위에서 op를 다시 invoke 한다. 
+연관 연산의 예로 numeric addition, min, max 그리고 string의 concatenation 이 있다.
 
 
+## Low-level stream construction
 
+지금까지 스트림을 얻기 위해 Collection.stream() 혹은 Arrays.stream(Object [])와 같은 메서드를 사용했다. 이러한 Stream-bearing 함수들은 어떻게 구현될까?
 
-
-
-
-
-
-
-
-
-
+[StreamSupport]()클래스는 스트림의 생성을 위해 많은 low-level 함수를 제공하는데 이러한 것들은 모두 Spliterator의 몇몇 형식을 이용한다. Spliterator는 Iterator의 병렬 아날로그 이다. 이것은 아마도 무한대의 컬렉션을 표현하고 
