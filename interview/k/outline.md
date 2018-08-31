@@ -65,7 +65,7 @@ Native(Metaspace) 로 몰아넣고 사이즈는 자동적으로 조정되도록 
 - 로컬 변수 형식 추론 (var, val)
 
 # JWT
-기존에 session으로 동작하던 인증방식이 무겁다고 생각, 예를 들면 메모리에 담게되면 어쨋든 부하...또, 확장을 위해 여러 도메인에서 서비스하기 위해서는 stateless 한 토큰이 좋은 방법이라고 생각.
+기존에 session으로 동작하던 인증방식이 무겁다고 생각, 예를 들면 메모리에 담게되면 어쨋든 부하...또, 확장을 위해 여러 도메인에서 서비스하기 위해서는 stateless 한 토큰이 좋은 방식은법이라고 생각.
 간단한 서비스를 만들때에는 웹표준 RFC7519 를 구현한 JWT가 심플. 
 
 Cookies에 session id를 담아서 인증하는 기존의 방식은 CSRF(Cross-site request forgery, CSRF, XSRF) 공격에 취약한 반면, 토큰기반의 JWT는 CSRF공격이 불가능하며 CORS(Cross-Origin Resource Sharing) 문제를 해결 할 수 있다.
