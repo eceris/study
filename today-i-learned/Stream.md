@@ -44,9 +44,9 @@ Stateful 연산은 전체 요소를 처리해야할 수도 있다. 예를들면 
 
 ```java
 int sumOfWeights = widgets.parallelStream()
-						.filter(b -> b.getColor() == RED)
-						.mapToInt(b -> b.getWeight())
-						.sum();
+  .filter(b -> b.getColor() == RED)
+  .mapToInt(b -> b.getWeight())
+  .sum();
 ```
 
 Serial과 Parallel의 유일한 차이점은 initial stream의 생성을 parallelStream()으로 하느냐 stream()으로 하느냐 이다. 종단 연산이 시작되면, 스트림 파이프라인은 호출되는 스트림의 방향에 따라 순차적으로 또는 병렬로 실행된다. 스트림을 직렬 또는 병렬로 실행할지 여부는 isParallel 메소드를 사용하여 결정할 수 있고, 스트림의 방향은 BaseStream.sequential() 과 BaseStream.parallel을 사용하여 수정할 수 있다. 종단 작업이 시작되면 스트림 파이프 라인은 호출되는 스트림의 모드에 따라 순차적으로 또는 병렬로 실행된다. 
@@ -69,7 +69,7 @@ String s = sl.collect(joining(" "));
 먼저, 두개의 string이 포함된 리스트를 생성한 후, 스트림을 생성하였다. 그리고나서 리스트에 새로운 요소가 추가되었다. 결과적으로 스트림의 요소들은 collected되고 함계 joined 된다. 위와 같이 코드를 실행 할 경우, 결과는 `one two three`가 나온다. 마지막으로 list에 요소를 수정한 이후 마지막에 **collect** 라는 **종단 연산**이 시작되었기 때문이다. 모든 스트림은 jdk 컬렉션으로부터 리턴되고 대부분의 JDK 클래스들은 잘 동작하도록 **보장**해준다.
 
 ## Stateless behaviors
-매개변수가 상태를 갖고 있는 **Stateful** 인 경우, 스트림 파이프라인의 결과는 비결정적이거나 올바르지 않을 수 있다. stateful 람다식(또는 fn interface의 구현체)은 스트림의 파이프라인 실행동안 변경될 수 있는 상태에 따라 결과가 달라진다. stateful 람다식식이 map함수의 매개변수로 들어있는 예제 이다. 
+매개변수가 상태를 갖고 있는 **Stateful** 인 경우, 스트림 파이프라인의 결과는 **비결정적이거나 올바르지 않을** 수 있다. stateful 람다식(또는 fn interface의 구현체)은 스트림의 파이프라인 실행동안 변경될 수 있는 상태에 따라 결과가 달라진다. stateful 람다식이 map함수의 매개변수로 들어있는 예제 이다. 
 
 ```java
 Set<Integer> seen = Collections.synchronizedSet(new HashSet<>());
