@@ -60,6 +60,9 @@ public class Foo {
 
 
 > \- 자원반환에 대한 최종적 안전장치를 구현하는 것이 아니면 finalizer()는 사용하지 말자. 
+>
 > \- 굳이 사용해야 한다면 super.finalize() 호출은 잊지말자.
+>
 > \- 자원의 반환 안전망을 구현하는 경우에 finalizer()가 호출 될 때마다 꼭 로깅하자.
+>
 > \- 상속이 가능한 public 클래스에 finalizer를 추가하는 상황이면, 꼭 finalizer guardian을 도입할지 고민해보자.
