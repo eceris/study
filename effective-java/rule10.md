@@ -1,102 +1,43 @@
-# 규칙 10. clone()을 재정의할 때는 신중할 것
+# 규칙 10. toString()은 항상 재정의 하라
+Object 클래스가 toString() 메소드를 제공하지만 @다음에 해시코드<sup>PhoneNumber@11cd9s</sup>가 붙은 형태이다. equals()와 hashcode() 보다는 덜 중요하지만 클래스를 좀 더 쾌적하게 사용하기 위해 구현하라.
+```
+{Jenny=PhoneNumber@11cd9s}
+보다는 
+{Jenny=(707) 867-5309)}
+가 낫다
+```
+가능하다면 toString() 메소드는 객체 내의 중요정보를 전부 담아 반환할 것.
 
-Clonable 은 객체가 복제<sup>clone</sup>을 허용한다는 사실을 알리는데 쓰려고 고안된 [믹스인 인터페이스<sup>mixin interface</sup> 이다.](rule18.md) 조금 특이한 형태인데, interface에는 clone() 메서드가 존재하지도 않는다. 
-
-#### final이 아닌 클래스에 clone()을 재정의 할때는 반드시 super.clone()을 호출해서 얻은 객체를 반환할 것.
-
-#### Clonable 인터페이스를 구현하는 클래스는 제대로 동작하는 public clone 메소드를 제공할 것.
-PhoneNumber 클래스에 clone을 재정의 한다고 하면, Clonable 인터페이스를 구현한다고 선언후, Object 클래스의 protected clone() 메소드를 접근할 수 잇도록 하는 public 메소드를 구현하면 된다.
+toString()이 반환하는 문자열의 형식을 명시하건 그렇지 않건 간에 어떤 의도 인지는 문서에 분명하게 남길 것.
 ```java
+/**
+*	전화번호를 문자열로 변환해서 반환한다.
+*	문자열은 "(XXX) YYY-ZZZZ" 형식으로 14개 문자로 구성.
+*	XXX 는 지역번호, YYY 는 국번, ZZZZ 는 회선번호다 
+*	전화번호의 각 필드가 주어진 자리를 다 채우지 못할 경우 필드 앞에는 
+*	0이 붙는다. 예를 들어, 회선 번호가 123일 경우, 위의 문자열 마지막 필드에
+*	채워지는 문자열은 "0123"이다.
+*
+*	지역번호를 닫는 괄호와 국번 사이에는 공백이 온다는 것에 주의하자.
+*/
 @Override
-public PhoneNumber clone() {
-	try {
-		return (PhoneNumber) super.clone();
-	} catch (CloneNotSupportedException ex) {
-		throw new AssertionError(); // 수행될리 없음.
-	}
+public String toString() {
+	return String.format("(%03d) %03d-%04d", areaCode, prefix, lineNumber);
 }
 ```
-
-
-
-
-
-
-equals() 메소드를 재정의 하는 클래스는 반드시 hashcode() 메소드도 재정이 해야한다.
-
-hashcode() 를 꼭 재정의해야하는 이유는 같은 객체는 같은 해시코드 값을 가져야 하기 때문이다. 아래를 보면 equals() 메소드는 규칙 8에서 설명한대로 구현되어있다.
+만약 형식을 명시하지 않기로 했다면 아래와 같이 작성하자.
 
 ```java
-public final class PhoneNumber {
-	private final short areaCode;
-	private final short prefix;
-	private final short lineNumber;
-
-	public PhoneNumber(int areaCode, int prefix, int lineNumber) {
-		rangeCheck(areaCode, 999, "areaCode");
-		rangeCheck(prefix, 999, "prefix");
-		rangeCheck(lineNumber, 999, "lineNumber");
-		this.areaCode = (short) areaCode;
-		this.prefix = (short) prefix;
-		this.lineNumber = (short) lineNumber;
-	}
-
-	private static void rangeCheck(int arg, int max, String name) {
-		if (arg < 0 || arg > max)
-			throw new IllegalArgumentException(name + ":" + arg);
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (o == this) 
-			return true;
-		if (!(o instanceof PhoneNumber))
-			return false;
-
-		PhoneNumber pn = PhoneNumber.class.cast(o);
-		return pn.lineNumber == lineNumber && pn.prefix == prefix && pn.lineNumber == lineNumber;
-	}
-
-	// hashcode 메소드가 없으므로 문제 발생
-}
-
-```
-
-만약 위의 클래스를 HashMap과 함께 사용한다면
-```java
-Map<PhoneNumber, String> m = new HashMap<>();
-m.put(new PhoneNumber(707, 867, 5309), "Jenny");
-
-String result = m.get(new PhoneNumber(707, 867, 5309));
-```
-result의 값은 null 이다. PhoneNumber 클래스의 hashcode() 를 재정의 하지 않아서 각 객체는 서로 다른 hashcode를 갖기 때문이다. 
-이런 경우 동일성 검사조차 하지 않는다.
-
-
-## 해시코드 메소드는 어떻게 구현 하는가?
-
-1. 필드가 boolean 이면 (f?1:0) 를 계산
-2. 필드가 byte, char, short, int 이면 (int) f 를 계산
-3. 필드가 long 이면 (int) (f^(f>>>32)) 를 계산
-4. 필드가 float 이면 Float.floatToBits(f) 를 계산
-5. 필드가 double 이면 Doulble.doubleToLongBits(f) 를 계산
-
-위의 절차에서 구해진 해시코드 c 를 
-result = 31 * result + c;
-로 결합.
-
-이것을 phoneNumber 클래스에 적용하면 
-```java
+/**
+*	물약(potion)의 내용을 간단히 설명하는 문자열을 반환한다. 
+*	정해진 문자열 형식은 없으며, 바뀔 수 있다.
+*	하지만 대체로 아래와 같은 문자열이 반환된다.
+*	
+*	"[Potion #9: type=love, smell=turpentine, look=inida ink]"
+*/
 @Override
-public int hashcode() {
-	int result = 17;
-	result = 31 * result + areaCode;
-	result = 31 * result + prefix;
-	result = 31 * result + lineNumber;
-	return result; 
-}
+public String toString() { ... }
 ```
-꽤 괜찮은 해시 함수이다. 
+이렇게 만들 경우, client 개발을 하는 스스로가 문제에 대한 책임을 져야 한다.
 
-> 주의할 것은, 성능을 개선하려고 객체의 중요 부분을 해시코드 계산 과정에서 생략하면 안된다.
-
+toString() 이 반환하는 문자열에 포함되는 정보는 모두 getter를 통해 가져올 수 잇도록 하자.(다른 개발자들을 위해)
