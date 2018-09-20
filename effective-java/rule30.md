@@ -30,9 +30,6 @@ public enum Orange { NAVEL, TEMPLE, BLOOD }
 
 enum 상수에 데이터를 넣으려면 객체 필드<sup>instance field</sup>를 선언하고 생성자를 통해 받은 데이터를 그 필드에 저장하여 사용
 
-
-
-
 ### enum 에서 각 요소가 다르게 동작해야하는 경우(switch를 사용해야 하는 경우)
 단순히 switch를 선언해서 사용 할 수도 있는데...
 ```java
@@ -65,10 +62,100 @@ public enum Operation {
 	PLUS { double apply(double x, double y) { return x + y; } },
 	MINUS { double apply(double x, double y) { return x - y; } },
 	TIME { double apply(double x, double y) { return x * y; } },
-	DIVIDE { double apply(double x, double y) { return x / y; } }
+	DIVIDE { double apply(double x, double y) { return x / y; } };
 
 	abstract double apply(double x, double y);
 }
 ```
 
 enum에 상수를 추가하고 apply구현을 잊을 가능성은 없다.
+
+위와 같이 하면 좋은데 보통은 toString을 오버라이드 하여 좀 더 표현력 있게 만들기도 한다.
+```java
+public enum Operation {
+	PLUS("+") { double apply(double x, double y) { return x + y; } },
+	MINUS("-") { double apply(double x, double y) { return x - y; } },
+	TIME("*") { double apply(double x, double y) { return x * y; } },
+	DIVIDE("/") { double apply(double x, double y) { return x / y; } };
+
+	private final String symbol;
+	Operation(String symbol) { this.symbol = symbol; }
+
+	@Override public String toString() { return symbol;	}
+
+	abstract double apply(double x, double y);
+}
+```
+어떤 때에 자주 사용하냐면
+```java
+public static void main(String[] args) {
+	double x = Double.parseDouble(args[0]);
+	double y = Double.parseDouble(args[1]);
+
+	for (Operation op : Operation.values()) {
+		System.out.printf("%f %s %f = %f%n", x, op, y, op.apply(x, y));
+	}
+}
+```
+
+
+### enum 상수마다 정책이 있는 경우 좋은 방법
+새로운 enum 상수를 추가할 때 초과근무 수당 계산 정책을 반드시 넣어야하는 구현법.
+```java
+//정책 enum 패턴
+enum PayrollDay {
+	MONDAY(PayType.WEEKDAY), TUESDAY(PayType.WEEKDAY),
+	WENDSDAY(PayType.WEEKDAY), THURSDAY(PayType.WEEKDAY),
+	FRIDAY(PayType.WEEKDAY),
+	SATURDAY(PayType.WEEKEND), SUNDAY(PayType.WEEKEND);
+
+	private final PayType payType;
+	PayrollDay(PayType payType) { this.payType = payType; }
+
+	double pay(double hoursWorked, double payRate) {
+		return payType.pay(hoursWorked, payRate);
+	}
+
+	//정책 enum 자료형
+	private enum PayType {
+		WEEKDAY {
+			double overtimePay(double hours, double payRate) {
+				return hours <= HOURS_PER_SHIFT ? 0 : (hours - HOURS_PER_SHIFT) * payRate / 2;
+			}
+		},
+		WEEKEND {
+			double overtimePay(double hours, double payRate) {
+				return hours * payRate / 2;
+			}
+		};
+
+		private static final int HOURS_PER_SHIFT = 0;
+		abstract double overtimePay(double hrs, double, payRate);
+
+		double pay(double hoursWorked, double payRate) {
+			double basePay = hoursWorked * payRate;
+			return basePay + overtimePay(hoursWorked, payRate);
+		}
+	}
+}
+```
+enum에서 switch문을 만들어서 사용한 코드보다는 복잡하지만 안전하다.
+
+### switch를 쓰면 좋은 상황도 있다.
+
+외부 enum 자료형 상수별로 달리 동작하는 코드를 만들어야 할 때는 enum 상수에 switch문을 적용하는 것이 좋다
+
+```java
+// 기존 enum 자료형에 없는 메소드를 switch 문을 사용해 구현한 사례
+public static Operation inverse(Operation op) {
+	switch(op) {
+		case PLUS : return Operation.MINUS;
+		case MINUS : return Operation.MINUS;
+		case TIMES : return Operation.DIVIDE;
+		case DIVIDE : return Operation.TIMES;
+		default : throw new AssertionError("Unknown Operation : " + op);
+	}
+}
+```
+
+> enum 은 int 상수에 비해 가독성도 높고 안전하고, 강력하다. 여러 enum 상수가 공통 기능을 이용해야 하는 일이 생길 때는 **정책 enum 패턴** 사용을 고려하자.
