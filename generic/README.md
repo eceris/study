@@ -1,4 +1,27 @@
 # generic 간편정리
+
+static <T> void test(List<T extends Comparable> t)
+
+static void test(List<? extends Comparable> t)
+
+?를 사용하는 것을 와일드 카드
+이렇게 하는것은 T가 뭐가 되든 관심쓰지 않겠다는 의미...
+
+
+List<?> list; // 이건 원소에는 관심이 없어 ... 그냥 List에 있는 함수만 사용할꺼야 ...
+
+List<Integer> ints = new ArrayList<>();
+
+List<Object> objInts = ints; // compile error
+
+List<? extends Integer> l2 = ints; //  정상
+
+List<? super Object> l2 = ints; //	정상
+
+? << wild 카드를 사용하는 건, 실제로 제약을 두기 위해
+
+
+
 ```
 static <T> void method(List<T> list) {
 }
