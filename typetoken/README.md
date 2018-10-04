@@ -1,11 +1,11 @@
-Á¦³×¸¯À¸·Î ¼±¾ğµÈ Å¸ÀÔÀ» ¸®ÇÃ·º¼ÇÀ¸·Îµµ °¡Á®¿Ã ¼ö¾ø´Ù
+ì œë„¤ë¦­ìœ¼ë¡œ ì„ ì–¸ëœ íƒ€ì…ì„ ë¦¬í”Œë ‰ì…˜ìœ¼ë¡œë„ ê°€ì ¸ì˜¬ ìˆ˜ì—†ë‹¤
 
-¿¹¸¦ µé¸é new ArrayList<String>(); ÀÌ ÄÚµå´Â ·±Å¸ÀÓ ½ÃÁ¡¿¡ TypeErasure ÀÛ¾÷À¸·Î Å¸ÀÔ Á¤º¸¸¦ ÀÒ¾î¹ö¸².
-½ÇÁ¦·Î´Â new ArrayList()·Î ¹Ù²ñ.....
+ì˜ˆë¥¼ ë“¤ë©´ new ArrayList<String>(); ì´ ì½”ë“œëŠ” ëŸ°íƒ€ì„ ì‹œì ì— TypeErasure ì‘ì—…ìœ¼ë¡œ íƒ€ì… ì •ë³´ë¥¼ ìƒì–´ë²„ë¦¼.
+ì‹¤ì œë¡œëŠ” new ArrayList()ë¡œ ë°”ë€œ.....
 
-±Ùµ¥ ¸¸¾à ÀÌ°ÍÀ» 
+ê·¼ë° ë§Œì•½ ì´ê²ƒì„ 
 List<String> s = new ArrayList<String>();
 Type t =  s.getClass().getGenericSuperClass();
 ParameterizedType p = (ParameterizedType) t;
 p.getActuralTypeArguments()[0]
-ÀÌ·¸°Ô ÇÏ¸é StringÀ» °¡Á®¿Â´Ù.<sup>TypeErasureÀÛ¾÷ÀÌ ÀÏ¾î³ªÁö ¾ÊÀ½</sup>
+ì´ë ‡ê²Œ í•˜ë©´ Stringì„ ê°€ì ¸ì˜¨ë‹¤.<sup>TypeErasureì‘ì—…ì´ ì¼ì–´ë‚˜ì§€ ì•ŠìŒ</sup>
