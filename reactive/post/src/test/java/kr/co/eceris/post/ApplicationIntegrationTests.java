@@ -1,5 +1,6 @@
 package kr.co.eceris.post;
 
+import kr.co.eceris.post.Post.Command;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +15,14 @@ import java.io.PipedOutputStream;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ApplicationTests {
+public class ApplicationIntegrationTests {
 
     @Autowired
     private WebTestClient webClient;
 
-
     @Test
     public void 새로운_post를_만들어보자() throws Exception {
-        Post body = new Post(null, "title", "contents");
+        Command body = new Command("id", "title", "contents");
         webClient.post()
                 .uri("/post")
                 .accept(MediaType.APPLICATION_JSON)

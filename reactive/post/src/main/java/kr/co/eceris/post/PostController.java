@@ -1,5 +1,6 @@
 package kr.co.eceris.post;
 
+import kr.co.eceris.post.Post.Command;
 import kr.co.eceris.post.infra.ID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,8 +31,18 @@ public class PostController {
     }
 
     @PostMapping("/post")
-    public Mono<Post> create(@RequestBody Post post) {
-        return repository.save(post);
+    public Mono<Post> create(@RequestBody Command command) {
+        return repository.save(new Post(command.getTitle(), command.getContent()));
+    }
+
+    @PostMapping("/post")
+    public Mono<Post> update(@RequestBody Command command) {
+        return repository.get(ID.fromString(command.getId()))
+        .flatMap(p -> {
+            p.setTitle(command.getTitle());
+            p.setContent(command.getContent());
+            return repository.save(p);
+        });
     }
 
     @DeleteMapping("/post/{id}")

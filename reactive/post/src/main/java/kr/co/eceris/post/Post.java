@@ -1,23 +1,24 @@
 package kr.co.eceris.post;
 
 import kr.co.eceris.post.infra.ID;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 
 @Getter
-@AllArgsConstructor
+@Setter
 @NoArgsConstructor
-@EqualsAndHashCode
 public class Post implements Serializable {
-    @Setter
+
     private ID id;
     private String title;
     private String content;
+
+    public Post(String title, String content) {
+        this.id = ID.newID();
+        this.title = title;
+        this.content = content;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -33,5 +34,14 @@ public class Post implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    static class Command implements Serializable  {
+        private String id;
+        private String title;
+        private String content;
     }
 }
