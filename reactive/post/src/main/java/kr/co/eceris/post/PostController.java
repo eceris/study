@@ -7,12 +7,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,14 +34,14 @@ public class PostController {
         return repository.save(new Post(command.getTitle(), command.getContent()));
     }
 
-    @PostMapping("/post")
+    @PutMapping("/post")
     public Mono<Post> update(@RequestBody Command command) {
         return repository.get(ID.fromString(command.getId()))
-        .flatMap(p -> {
-            p.setTitle(command.getTitle());
-            p.setContent(command.getContent());
-            return repository.save(p);
-        });
+                .flatMap(p -> {
+                    p.setTitle(command.getTitle());
+                    p.setContent(command.getContent());
+                    return repository.save(p);
+                });
     }
 
     @DeleteMapping("/post/{id}")
