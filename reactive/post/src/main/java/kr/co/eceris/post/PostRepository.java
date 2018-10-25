@@ -1,8 +1,6 @@
 package kr.co.eceris.post;
 
-import kr.co.eceris.post.Post.Command;
 import kr.co.eceris.post.infra.ID;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
