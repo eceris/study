@@ -150,7 +150,7 @@ Swarm manager들은 컨테이너를 운영하는 여러 전략을 사용할 수 
 
 
 ## Set up your swarm
-swarm은 노드로 구성된다. `docker swarm init`을 하면 swarm manager가 되고, woker로 사용할 머신에서 `docker swarm join`을 하면 조인한다. 
+swarm은 노드로 구성된다. `docker swarm init`을 하면 swarm manager가 되고, worker로 사용할 머신에서 `docker swarm join`을 하면 조인한다. 
 
 ### Create a cluster
 
@@ -161,9 +161,11 @@ docker-machine ls
 ```
 하면 머신목록을 조회할 수 있다.
 
-작성중....
 
+# Stacks
 
+## Introduction
+distributed application
 
-
+**Stack**은 dependency를 공유하는 상호 연관된 서비스들의 group이며 함께 scaled 되고 orchestrated 될 수 있다. single Stack은 전체 애플리케이션의 기능을 정의하고 조정한다.
 
