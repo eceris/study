@@ -1,6 +1,8 @@
 
 [여기 보고 정리 한 것.] (https://dzone.com/articles/using-optional-correctly-is-not-optional)
 
+# 작성중
+
 # 1. Optional 변수에 Null을 할당하지 마라
 
 ```java
