@@ -20,3 +20,7 @@
 
 ## 상속을 염두에 둔 클래스는 Serializable 을 구현하지 않는 것이 바람직, 인터페이스는 가급적 Serializable 를 상속받지 말아야 한다.
 - 그러나 marker 형태의 Serializable 구현은 상황에 따라 다름.
+
+상속을 고려해 설계된 클래스 가운데 Serializable 을 구현한 것으로는 Throwable, Component, HttpServlet 이 존재.
+Throwable 이 Serializable 을 구현한 것은 원격에서도 예외를 받기 위해.
+HttpServlet 이 Serializable 을 구현한 것은 세션상태를 캐시하기 위해.
