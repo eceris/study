@@ -574,3 +574,67 @@ HTML 안에서 `v-` prefix를 가진 모든 속성을 말한다.
 > 사실 앵귤러의 디렉트비와 비슷한 역할을 하며, 사용자가 직접 돔 요소에 접근하여 뭔가를 하지 않도록 하기 위해 디렉티브를 사용하도록 권장함.
 
 ### 이벤트 처리
+`v-on` 으로 이벤트를 바인딩 하며, event 인자를 이용해 돔 이벤트에 아래와 같이 접근 가능하다. 
+```html
+<div id="app">
+  <button v-on:click="click(10)">클릭</button>
+</div>
+<script>
+new Vue({
+  el : '#app',
+  methods : {
+    click: function(num) {
+      alert(num);
+    },
+    click: function(event) {
+      console.log(event);
+    }
+  }
+});
+</script>
+```
+
+#### computed 속성
+- data에 따라 자동으로 연산 및 캐싱.
+- methods 속성은 호출할 때만 수행하지만 computed 속성은 데이터가 변경되면 자동 수행.
+
+```html
+<div id="app">
+  <p>{{reversedMessage}}</p>
+</div>
+<script>
+new Vue({
+  el : '#app',
+  data : {
+    message : 'hello~'
+  },
+  computed : {
+    reversedMessage : function() {
+      return this.message.split('').reverse().join('');
+    }
+  }
+});
+</script>
+```
+
+#### watch 속성
+- 데이터 변환을 감지하여 자동으로 특정 로직 수행
+
+```html
+<div id="app">
+  <input v-model="message">
+</div>
+<script>
+new Vue({
+  el : '#app',
+  data : {
+    message : 'hello~'
+  },
+  watch : {
+    message : function(data) {
+      console.log('message의 값이 바뀝니다. : ');
+    }
+  }
+});
+</script>
+```
