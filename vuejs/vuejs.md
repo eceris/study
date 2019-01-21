@@ -626,6 +626,7 @@ new Vue({
 </div>
 <script>
 new Vue({
+
   el : '#app',
   data : {
     message : 'hello~'
@@ -638,3 +639,43 @@ new Vue({
 });
 </script>
 ```
+
+## 5.2 뷰 프로젝트 구성 방법
+
+### 싱글 파일 컴포넌트 체계
+- `.vue` 파일로 프로젝트 구조를 구성하는 방식
+
+```html
+<template>
+<!--HTML  태그 내용-->
+</template>
+
+<script>
+export default {
+  //자바스크립트 내용
+}
+</script>
+
+<style>
+/*스타일 내용*/
+</style>
+```
+
+
+### 뷰 CLI
+- 커맨드라인 인터페이스(CLI)를 이용해 초기 프로젝트 구조를 쉽게 생성
+
+#### 뷰 CLI 명령어
+
+-초기 스켈레톤 프로젝트 구성을 위한 명령어 `vue init`
+
+| 템플릿 종류 | 설명 |
+|:--------|:--------|
+| vue init webpack | 고급 웹팩 기능을 활용한 프로젝트 구성 방식. 테스팅, 문법 검사 등을 지원 |
+| vue init webpack-simple | 웹팩 최소 기능을 활용한 프로젝트 구성 방식. 빠른 화면 프로토타이핑용. |
+| vue init browserify | 고급 브라우저리파이 기능을 활용한 프로젝트 구성 방식. 테스팅, 문법 검사 등을 지원 |
+| vue init browserify-simple | 브라우저리파이 최소 기능을 활용한 프로젝트 구성 방식. 빠른 화면 프로토타이핑 용 |
+| vue init simple | 최소 뷰 기능만 들어간 HTML 파일 1개 생성 |
+| vue init pwa | 웹팩 기반의 프로그레시브 웹 앱(PWA, Progressive Web App) 기능을 지원하는 뷰 프로젝트 |
+
+- 기본적으로 모듈 번들러<sup>webpack 이나 browserify</sup> 와 뷰 로더를 포함.
