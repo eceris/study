@@ -67,7 +67,6 @@ export default {
 # 28. [Dynamic Components](https://youtu.be/09n2945JW_0)
 - 부모 뷰의 컴포넌트를 동적으로 지정
 - 아래 코드의 button을 누르면 각 component가 보이는데, 데이터는 잃는다 왜냐면, component 가 destroy 되므로...
-- 근데 데이터를 잃기 싫으면, `<keep-alive>` 태그로 감싸면 된다.
 
 app.vue
 ```html
@@ -99,7 +98,18 @@ export default {
 </script>
 ```
 
-
+- 근데 데이터를 잃기 싫으면, `<keep-alive>` 태그로 감싸면 된다.
+```html
+<template>
+	<div>
+		<keep-alive>
+			<component v-bind:is="component"></component>
+		</keep-alive>
+		<button v-on:click="component = 'form-one' ">show component one!</button>
+		<button v-on:click="component = 'form-two' ">show component two!</button>
+	</div>
+</template>
+```
 
 
 
