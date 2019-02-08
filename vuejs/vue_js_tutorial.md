@@ -111,6 +111,58 @@ export default {
 </template>
 ```
 
+# 29. Input Binding
+# 30. Checkbox Binding
+# 31. Select Box Binding
+# 32. HTTP Requests
+- 기본적으로 vue resource 를 기준으로 설명
+- 아래에서 `.prevent`가 이벤트 전파를 방지. 
+```html
+<button v-on:click.prevent="post">add blog</button>
+```
+
+# 33. GET Requests
+별 내용 없음
+
+# 34. Custom Directives
+- v-on, v-if, v-for, `v-`으로 시작하는건 모두 directives 
+- directive 의 value를 직접 지정할 경우에는 ""로 감싸고 안에는 {}, [], '' 모두 지정할 수 있고, `binding.value` 로 접근 가능하다.
+```html
+<template>
+<div v-theme="'wide'" id='show-blogs'>
+<h2 v-rainbow> </h2>
+</div>
+
+</template>
+```
+
+```vue
+Vue.directive('rainbow', {
+	bind(el, binding, vnode){
+		el.style.color = "#" + Math.random().toString().slice(2, 8);
+	}
+});
+
+Vue.directive('theme', {
+	bind(el, binding, vnode){
+		if (binding.value == 'wide') {
+			el.style.maxWidth= '1200px';
+		} else if (binding.value == 'narrow') {
+			el.style.maxWidth= '560px';
+		}
+
+		if (binding.arg == 'column') {
+			el.style.background = '#ddd';
+			el.style.padding = '20px';
+		}
+	}
+});
+
+new Vue({
+	el :'#app',
+	render : h => h(App)
+});
+```
 
 
 
