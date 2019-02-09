@@ -129,7 +129,7 @@ export default {
 - directive 의 value를 직접 지정할 경우에는 ""로 감싸고 안에는 {}, [], '' 모두 지정할 수 있고, `binding.value` 로 접근 가능하다.
 ```html
 <template>
-<div v-theme="'wide'" id='show-blogs'>
+<div v-theme:column="'wide'" id='show-blogs'>
 <h2 v-rainbow> </h2>
 </div>
 
@@ -163,6 +163,167 @@ new Vue({
 	render : h => h(App)
 });
 ```
+
+# 35. Filters
+- vue에서 간단하게 사용할 수 있게 제공하는 Filter, data 에 `|` 를 사용하여 filtering.
+
+```html
+<template>
+	<div id="show-blogs">
+		<div v-for"blog in blogs" class="single-blog">
+			<h2>{{blog.title | to-uppercase}}</h2>
+			<article>{{blog.body | snippet }}</article>
+		</div>
+	</div>
+</template>
+```
+```vue
+
+//Filters
+Vue.filter('to-uppercase', function(value) {
+	return value.toUpperCase();
+});
+
+
+Vue.filter('snippet', function(value) {
+	return value.slice(0, 100) + '...';
+});
+
+
+new Vue({
+	el :'#app',
+	render : h => h(App)
+});
+```
+
+# 36. Custom Search Filter
+- 위의 필터로 사용해도 되지만 Array 형태의 데이터를 filtering 하기에는 성능의 문제가 있음 ... 그래서 아래와 같이 computed 를 사용하여 filtering..
+
+```html
+<template>
+	<div id="show-blogs">
+		<input type="text" v-model="search" placeholder="search blogs"/>
+		<div v-for"blog in filteredBlogs" class="single-blog">
+			<h2>{{blog.title | to-uppercase}}</h2>
+			<article>{{blog.body | snippet }}</article>
+		</div>
+	</div>
+</template>
+<script>
+
+export default {
+	data() {
+		return {
+			data :[],
+			search : ''
+		}
+	},
+	created() {
+		this.$http.get('https://jsonplaceholder.typeicode.com/posts')
+		.then(function(data) {
+			this.blogs = data.body.slice(0, 10);
+		})
+	},
+	computed : {
+		filteredBlogs : function() {
+			return this.blogs.filter((blog) => {
+				return blog.title.match(this.search);
+			});
+		}
+	}
+}
+
+</script>
+
+```
+```vue
+
+//Filters
+Vue.filter('to-uppercase', function(value) {
+	return value.toUpperCase();
+});
+
+
+Vue.filter('snippet', function(value) {
+	return value.slice(0, 100) + '...';
+});
+
+
+new Vue({
+	el :'#app',
+	render : h => h(App)
+});
+```
+
+# 37. Registring Things Locally
+- 글로벌로 선언된 위의 예제들(Filter, directive)등을 locally 하게 선언하는 방법
+
+```html
+<script>
+export default {
+	data() {
+		...
+	},
+
+
+	filters: {
+		'to-uppercase' : function(value) {
+			return value.toUpperCase();
+		},
+		toUppercase(value)) { //위와 똑같이 동작
+			return value.toUpperCase();
+		}
+	},
+	directives : {
+		'rainbow' : {
+			bind(el, binding, vnode) {
+				el.style.color = "#" + Math.random().toString().slice(2, 8);
+			}
+		}
+	}
+}
+
+</script>
+```
+
+# 38. Mixins
+
+- 모든 컴포넌트에 같은 동작을 하는 computed method 같은 property를 모아놓고  믹스인해서 사용하는 방법
+
+- property 의 집합이다. 미리 선언해놓고 import 해서 사용하는 방법
+
+```html
+//mixin/searchMixin.js
+export default {
+	computed : {
+		filteredBlogs : function() {
+			return this.blogs.filter((blog) => {
+				return blog.title.match(this.search);
+			});
+		}
+	}
+}
+```
+
+아래와 같이 mixins property에 array 형태로 import된 mixin을 삽입해주면 마치 해당 vue 파일에 존재하는 computed 메소드를 사용하는 것과 동일하게 동작한다.
+
+```vue
+// component/listBolg.vue
+import searchMixin from '../mixin/searchMixin'
+
+<script>
+export default {
+	...
+	...
+
+	mixins: [searchMixin]
+}
+</script>
+```
+
+
+
+
 
 
 
