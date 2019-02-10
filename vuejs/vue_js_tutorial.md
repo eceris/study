@@ -321,6 +321,209 @@ export default {
 </script>
 ```
 
+# 39. Setting up Routing 
+- router.js 파일을 따로 분리하여 관리하고 main.js 에서 import 하여 설정한다.
+
+```html
+// router.js
+
+import showBlogs from './components/showBlogs.vue'
+import addBlogs from './components/addBlogs.vue'
+
+export default [
+	{ path: '/', component: showBlogs },
+	{ path: '/add', component: addBlogs }
+]
+```
+
+```html
+// main.js
+
+...
+import Routes from './routes'
+
+Vue.use(VueRouter);
+
+const router = new VueRouter({
+	routes: Routes	
+})
+
+new Vue({
+	el:'#app',
+	render: h=> h(App),
+	router: router
+})
+```
+
+# 40. Routing Mode(Hash vs History)
+- hash Thing 은 url 이 clean 하게 보이지 않게 한다. 
+- # 을 통한 요청은 실제로 추가 요청을 만들지 않음.
+- # 은 사실 `<a>` 로 페이지의 다른 뷰를 보여주는 것일 뿐이다.
+- url 에 # 을 지우고 싶다면, router 의 mode 를 history로 하도록 한다.
+
+
+# 41. Adding Router Links
+- `router-link` 디렉티브를 사용하여 routing 한다.
+- 디렉티브에 `exact` 를 사용하면, 실제 url 의 contain이 아닌 match 일 경우만 표현 한다.
+
+```html
+<template>
+	<div>
+		<nav>
+			<ul>
+				<li>
+					<router-link to="/" exact>Blog</router-link>
+				</li>
+				<li>
+					<router-link to="/" exact>Blog</router-link>
+				</li>
+			<ul>
+		<nav>
+	</div>
+</template>
+```
+
+# 42. Route Parameters
+localhost:8080:/blog/:id -> Route Parameter 
+{ path:'/blog/:id', component: singleBlog } 
+
+- 보통은 created 에서 route.params.id 로 아래와 같이 data binding 하는 것 같음.
+```html
+<script>
+export default {
+	data() {
+		return {
+			id : this.$route.params.id,
+			blog:{}
+		}
+	},
+	created() {
+		this.$http.get('http://jsonplaceholder.typicode.com/posts/' + this.id)
+		.then(function(data) {
+			console.log(data);
+			this.blog = data.body;
+		})
+	}
+}
+</script>
+```
+
+# 43. Posting to Firebase
+- [firebase](https://firebase.google.com) 를 이용하여 간단하게 데이터를 쓰기 읽기 가능.
+- 
+
+# 44. Retrieving Posts from Firebase
+- data.json() 는 promise 객체이다. 그래서 `.then`으로 데이터를 받아서 표현.
+
+```html
+<script>
+export default {
+	created() {
+		this.$http.get('https://abscd.com/posts.json')
+		.then(function(data) {
+			return data.json();
+		})
+		.then(function(data) {
+			var blogsArray = [];
+			for (let key in data) {
+				//console.log(data[key]);
+				data[key].id = key
+				blogsArray.push(data[key]);
+			}
+			//console.log(blogsArray);
+
+			this.blogs = blogsArray;
+		})
+	}
+}
+</script>
+```
+
+
+
+# 1. Vue CLI Introduction
+
+## Creating a Project
+old cli: 
+	vue init webpack-simple MYAPP 
+
+new cli: 
+	vue create MYAPP 
+
+Default preset
+- eslint
+- babel
+
+Custom preset
+- vuex
+- vue router
+- pwa support
+- etc...
+
+## Webpack Configuration
+- Webpack config는 추상화되어 사라짐(hidden)
+- Webpack config 를 vue.config.js 로 끌어댕김
+- Plugins 으로? Webpack config 를 수정가능
+
+
+## Plugins
+- config 와 functionality 를 확장 가능
+- 기본 dependencies를 지원하고 아래도 또한 지원
+	- Edit the webpack config
+	- Edit source files(e.g. templates)
+	- Add extra commands to the CLI
+
+## Instant Prototyping
+- 빠르게 single, standalone 형태의 components를 프로토타입핑이 가능.
+- Vue project 개발환경을 직접 세팅할 필요 없음
+
+## Graphical User Interface
+- projects 를 쉽게 생성하고 관리 가능
+- dependencies 와 plugins 를 설치 및 관리
+
+
+# 2. Using the new CLI
+$ node -v 
+$ npm uninstall -g vue-cli // vue cli 구버전 삭제
+$ npm install -g  @vue/cli // vue cli 신버전 설치 vue scope의 cli 설치
+$ vue create MYAPP // vue cli 로 project 생성
+
+- babel.config.js 에 presets 목록에 @vue/app 이 기본으로 세팅되는데 이것은
+babel은 아직 지원하지 않는 새로운 기능들이나 polyfills 를 자동으로 지원해줌.
+
+
+# 3. Dev Server
+- package.js 에 보면 @vue/cli-service 가 보이는데, 이것은 vue cli service 를 로컬에 설치해서 lint 나 이런것들을 자유롭게 사용하도록 도와줌.
+$ npm run serve 
+
+# 4. Custom Presets
+- $ vue create 할 때 옵션을 지정
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
