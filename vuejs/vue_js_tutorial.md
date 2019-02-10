@@ -529,7 +529,15 @@ vuetify 를 add 하면 template의 모든 마크업에 클래스도 바뀌고 �
 - 아래와 같이 하면 npm 이 싱글 컴포넌트를 프로토타이핑 할 수 있도록 도와줌.
 	$ vue serve online.vue
 
+# 8. The Vue GUI
+- ui 로 제공하는 vue cli
+	$ vue ui
+- 위에서 제공했던 cli 를 gui 로 모두 처리 할 수 있다.
+- graphql 을 위한 apollo 
 
+# 9. Using 'vue init' with the CLI3 
+- CLI 1, 2 에서 사용하던 vue init 을 사용하기 위해서는 아래와 같이 cli-init 을 수동으로 설치해주어야 한다. 
+	$ npm install -g @vue/cli-init
 
 
 
