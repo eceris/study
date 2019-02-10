@@ -497,7 +497,39 @@ babel은 아직 지원하지 않는 새로운 기능들이나 polyfills 를 자�
 $ npm run serve 
 
 # 4. Custom Presets
-- $ vue create 할 때 옵션을 지정
+- $ vue create 할 때 옵션을 지정할 수 있는데, dedicated config files 를 선택하면 packages.json 에 모든 옵션이 포함되지 않고, 프로젝트 루트에 관련 파일들이 생성된다.(.eslintrc.js, .browserslistrc... 등등...)
+
+# 5. Plugins 
+cli 에서 아래와 같이 동작한다. 
+
+- vue add babel // cli-plugin-babel 이 추가된다.
+- vue add vuetify // mertierial 디자인으로 쉽게 디자인할 수 있도록 도와줌.
+
+vuetify 를 add 하면 template의 모든 마크업에 클래스도 바뀌고 자동으로 마이그레이션 해준다.
+
+# 6. Build & Deploy to Firebase
+
+1. console.firebase.google.com 에 프로젝트 추가 
+2. project dashboard 에서 hosting을 클릭
+3. $ npm install -g firebase-tools
+4. firebase 를 이용하여 로그인하여 init!
+	$ firebase login
+	$ firebase init
+	$ firebase deploy
+5. hosting을 선택하고 deploy할 폴더를 선택 : dist
+6. 이렇게 해서 npm run build 할 경우, firebase cli가 dist에 자동으로 bundling 해줌
+7. 실제 firebase에 배포하기 위해 
+	$ firebase deploy --only hosting
+8. 그리고 console에 보면 배포된 것을 확인
+
+# 7. Instant Prototyping
+- 프로토타이핑을 위한 작업
+	$ npm install -g @vue/cli-service-global 
+
+- 아래와 같이 하면 npm 이 싱글 컴포넌트를 프로토타이핑 할 수 있도록 도와줌.
+	$ vue serve online.vue
+
+
 
 
 
