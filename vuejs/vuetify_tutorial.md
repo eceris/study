@@ -66,7 +66,30 @@ vue add vuetify
 - 자세한 건 [문서](https://vuetifyjs.com/en/framework/typography)를 참조
 
 
+# 5. Buttons & Icons
 
+## [Buttons](https://vuetifyjs.com/en/components/buttons#button)
+- 아래와 같이 사용 가능하고 `class` attr 로 색상을 다룰 수도 있고 약속된 `depressed, flat` 과 같은 attr을 추가하여 사용할 수 있다.
+```html
+<v-btn class="pink white--text">click me</v-btn>
+<v-btn depressed color="pink">click me</v-btn>
+<v-btn flat color="pink">click me</v-btn>
+```
+- 근데 depressed 의 color 는 background color 인데 flat 의 color는 font 컬러를 뜻한다. 좀 헷갈림.
+
+## [Icons](https://vuetifyjs.com/en/framework/icons#icons)
+- 간단히 [material 아이콘](https://material.io/tools/icons)을 사용할 수 있음.
+- 재밌는게 icons에 fav 라는 attr이 있음.
+
+```html
+<v-btn flat color="pink">
+	<v-icon left>email</v-icon>
+</v-btn>
+
+<v-btn fab color="pink">
+	<v-icon left>email</v-icon>
+</v-btn>
+```
 
 
 
