@@ -91,8 +91,42 @@ vue add vuetify
 </v-btn>
 ```
 
+# 6. Breakpoints & Visibility
 
+## [Breakpoints](https://vuetifyjs.com/en/framework/breakpoints#breakpoints)
+- vuetify는 Material Design 의 Viewport Breakpoints 를 갖고 있는데, 그것에 따라 노출 여부 등을 변경할 수 있다.(window 에 resize 이벤트로 걸려있는듯)
+- 각각의 code<sup>xs, sm, md, lg, xl</sup> 는 width range를 갖고 있음.
 
+## Visibility
+- BreakePoints 에 따라 Visibility를 정할 수 있는데, `class="hidden-md-and-down"` 과 같이 정할 수 있다.
+```html
+<v-btn class="hidden-md-and-down">Click me</v-btn> // 미디엄 사이즈 하위로는 버튼을 감춤
+<v-btn class="hidden-md-and-up">Click me</v-btn> // 미디움 사이즈 상위로는 감춤
+<v-btn class="hidden-sm-only">Click me</v-btn> // 스몰 사이즈 에만 감춤
+```
+
+# 7. Toolbars
+
+- `<v-toolbar>` 를 이용하여 툴바를 만들 수 있는데 `app` attr 을 추가하면 항상 상단에 fixed 된 상태로 스크롤된다.
+
+```html
+<template>
+	<nav>
+		<v-toolbar flat app>
+			<v-toolbar-title>
+				<span class="font-weight-light">Todo</span>
+				<span>App</span>
+			</v-toolbar-title>
+			<v-spacer></v-spacer>
+			<v-btn flat color="grey">
+				<span>Sign out</span>
+				<v-icon>exit_to_app</v-icon>
+			</v-btn>
+		</v-toolbar>
+	</nav>
+</template>
+```
+- `<v-spacer>`는 빈 공간을 채우기 위한 유용한 tag 이다.
 
 
 
