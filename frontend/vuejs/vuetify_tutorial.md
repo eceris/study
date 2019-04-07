@@ -129,5 +129,74 @@ vue add vuetify
 - `<v-spacer>`는 빈 공간을 채우기 위한 유용한 tag 이다.
 
 
+# 8. Navigation Drawers
+
+```
+<v-toolbar>
+	<v-toolbar-side-icon class="grey--text" v-on:click="drawer = !drawer"></v-toolbar-side-icon>
+</v-toolbar>
+
+<v-navigation-drawer app class="indigo" v-model="drawer">
+<p>test</p>
+</v-navigation-drawer>
+
+<script>
+export default {
+	data() {
+		return {
+			drawer : true
+		}
+	}
+}
+</script>
+```
+- 사이드에 네비게이션 바를 넣고 싶은 경우 `v-navigation-drawer` 를 사용
+- `v-navigation-drawer` 에 꼭 app prop 을 넣어주어야 현재 앱에 적용됨.
+- v-toolbar-side-icon 는 toolbar 에 아이콘을 넣는 것.
+- `app` prop를 넣어주어야 함.
+
+# 9. Themes
+- 기본적으로 success, error, waring, info 의 theme이 존재.
+- plugin 의 vuetify.js 에 theme을 overwrite 할 수 있음.
+```
+Vue.use(Veutify, {
+	iconfont : 'md',
+	theme : {
+		primary : '#9652ff',
+		success : '#3cd1c2',
+		info : '#ffaa2c',
+		warning : '#f83e70'
+	}
+})
+```
+- 위와 같이 기본적인 theme을 수정 가능.
+
+# 10. Lists
+```html
+<v-list>
+	<v-list-tile>
+		<v-list-title-content>
+			<v-list-title-title class="white--text">Dashboard</v-list-title-title>
+		</v-list-title-content>
+	</v-list-tile>
+</v-list>
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
