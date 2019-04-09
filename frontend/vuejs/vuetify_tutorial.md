@@ -171,16 +171,56 @@ Vue.use(Veutify, {
 ```
 - 위와 같이 기본적인 theme을 수정 가능.
 
-# 10. Lists
+# 10. [Lists](https://vuetifyjs.com/en/components/lists#list)
+- `v-list-tile-content` 은 컨텐츠를 담기 위한 tag
+- `v-list-tile-action` 은 아이콘을 추가하기 위한 tag
+
 ```html
 <v-list>
 	<v-list-tile>
-		<v-list-title-content>
-			<v-list-title-title class="white--text">Dashboard</v-list-title-title>
-		</v-list-title-content>
+		<v-list-tile-action>
+			<v-icon>dashboard</v-icon>
+		</v-list-tile-action>
+
+		<v-list-tile-content>
+			<v-list-tile-title class="white--text">Dashboard</v-list-tile-title>
+		</v-list-tile-content>
 	</v-list-tile>
 </v-list>
 ```
+
+- route 하기 위해 `<v-list-tile>` 에 router to prop을 추가.
+```html
+<template>
+	<v-list>
+		<v-list-tile v-for="link in links" :key="link.text" router to ="link.route">
+			<v-list-tile-action>
+				<v-icon>{{ link.icon }}</v-icon>
+			</v-list-tile-action>
+
+			<v-list-tile-content>
+				<v-list-tile-title class="white--text">{{ link.text }}</v-list-tile-title>
+			</v-list-tile-content>
+		</v-list-tile>
+	</v-list>
+</template>
+<script>
+export default {
+	data() {
+		return {
+			links : [
+				{icon : 'dashboard', text : 'Dashboard', route : '/'},
+				{icon : 'folder', text : 'My Projects', route : '/projects'},
+				{icon : 'person', text : 'Team', route : '/team'}
+			]
+		}
+	}
+}
+</script>
+```
+
+# 11. Adding Routes
+- skip 해도 될 것 같음. 단순한 router 설명.
 
 
 
