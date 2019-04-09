@@ -223,20 +223,3 @@ export default {
 - skip 해도 될 것 같음. 단순한 router 설명.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
