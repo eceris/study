@@ -222,4 +222,142 @@ export default {
 # 11. Adding Routes
 - skip 해도 될 것 같음. 단순한 router 설명.
 
+# 12. Padding & Margin
+- {property}{direction}--{size} 의 형태로 padding 과 margin 을 줄 수 있음.
+
+## property
+
+아래와 같이 줄여서 사용
+
+- `m` : margin
+- `p` : padding
+
+## direction
+아래와 같이 줄여서 사용
+
+- `t` : *-top
+- `b` : *-bottom
+- `l` : *-left
+- `r` : *-right
+- `x` : *-left와 *-right
+- `y` : *-top와 *-bottom
+- `a` : 모든 direction
+
+## size
+- `auto` : 사이즈를 자동으로 지정
+- `0` : 공간 제거
+- `1` : 공간을 `$spacer * .25` 로 지정
+- `2` : 공간을 `$spacer * .5` 로 지정
+- `3` : 공간을 `$spacer` 로 지정
+- `4` : 공간을 `$spacer * 1.5` 로 지정
+- `5` : 공간을 `$spacer * 3` 로 지정
+
+## example
+
+- 아래는 `<v-content>` tag 에 `horizontal` `margin` 을 `$spacer * 1.5` 정도 준 것.
+
+```html
+<v-content class="mx-4">
+</v-content>
+```
+
+- `<v-container>` 는 center focused page 를 위해 사용 혹은 `fluid` 속성을 줘서 full width로 확장 가능.
+- `<v-layout>` section을 separate 하고 `v-flex` 를 포함한다.
+
+```html
+<v-container class="my-5">
+</v-container>
+```
+
+
+# 13. [The Grid System - 1](https://vuetifyjs.com/ko/framework/grid#)
+- 기본적으로 `flex-box` 을 바탕으로 구현되었고 12 포인트 그리드 시스템을 사용.
+- 아래와 같이 `v-flex`의 prop을 통해 각 breakepoint 에 정렬을 지정할 수 있음.
+
+## example
+- 예를 들어 버튼을 노출하는데 xs 일때는 12 컬럼을 모두 차지, md 일때는 6 컬럼 만 차지 하고 싶다면 꼭 `v-latout` 에 `wrap` 속성을 명시할 것.
+```html
+<v-content class="my-5">
+	<v-layout row wrap>
+		<v-flex xs12 md6>
+			<v-btn outline block class="primary">button 1</v-btn>
+		</v-flex>
+		<v-flex xs12 md6>
+			<v-btn outline block class="secondary">button 2</v-btn>
+		</v-flex>
+	</v-layout>
+</v-content>
+```
+
+- 아래는 미디어타입 브레이크포인트가 xs 인 경우 상단에 button1이 12컬럼을 차지, 하단에 나머지 버튼이 노출 
+- 미디어타입 브레이크 포인트가 md 일때는 상단에 button1이 6컬럼을 차지, 나머지 버튼이 2컬럼씩 차지하여 노출
+```html
+<v-content class="my-5">
+	<v-layout row wrap>
+		<v-flex xs12 md6>
+			<v-btn outline block class="primary">button 1</v-btn>
+		</v-flex>
+		<v-flex xs4 md2>
+			<v-btn outline block class="secondary">button 2</v-btn>
+		</v-flex>
+		<v-flex xs4 md2>
+			<v-btn outline block class="waring">button 3</v-btn>
+		</v-flex>
+		<v-flex xs4 md2>
+			<v-btn outline block class="error">button 2</v-btn>
+		</v-flex>
+	</v-layout>
+</v-content>
+```
+
+- 만약 아래와 같이 12컬럼을 채우지 못할 경우, 나머지가 빈칸으로 노출되는데, 빈칸을 제외하고 가운데 정렬을 하고 싶다면 `<v-layout>` 에 `justify-center` 속성을 추가하면 됨. 자세한 내용은 [문서를 참조](https://vuetifyjs.com/ko/framework/grid#layout-playground)
+```html
+<v-content>
+	<v-layout row wrap>
+		<v-flex xs4 md3>
+			<v-btn outline block class="success">1</v-btn>
+		</v-flex>
+		<v-flex xs4 md3>
+			<v-btn outline block class="success">2</v-btn>
+		</v-flex>
+	</v-layout>
+</v-content>
+```
+
+# 14. [The Grid System - 2](https://vuetifyjs.com/ko/framework/grid#)
+
+- 아래와 같이 reactive 하게 grid 를 생성할 수 있다.
+```html
+<v-content>
+	<v-card flat class="pa-3">
+		<v-layout row wrap>
+			<v-flex xs12 md6>
+				<div class="caption grey--text">Project Title</div>
+				<div>Create new website</div>
+			</v-flex>
+			<v-flex xs6 sm4 md2>
+				<div class="caption grey--text">Person</div>
+				<div>John</div>
+			</v-flex>
+			<v-flex xs6 sm4 md2>
+				<div class="caption grey--text">Due by</div>
+				<div>1st Jan 2019</div>
+			</v-flex>
+			<v-flex xs2 sm4 md2>
+				<div class="caption grey--text">Status</div>
+				<div>ongoing</div>
+			</v-flex>
+		</v-layout>
+	</v-card>
+</v-content>
+```
+
+
+
+
+
+
+
+
+
 
