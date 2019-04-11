@@ -352,7 +352,73 @@ export default {
 </v-content>
 ```
 
+# 15. Dummy Project Data
+- `v-for` 를 이용하여 Dummy Project 를 순회하여 보여줌. 
+- 동적으로 프로젝트의 상태를 보여주기 위해 클래스를 동적으로 변경하는데 `${project.status}` 와 같이 노출하면 동적으로 바인딩 
 
+```html
+<template>
+  <div class="dashboard">
+    <h1 class="subheading grey--text">Dashboard</h1>
+
+    <v-container class="my-5">
+      
+      <v-card flat v-for="project in projects" :key="project.title">
+        <v-layout row wrap :class="`pa-3 project ${project.status}`">
+          <v-flex xs12 md6>
+            <div class="caption grey--text">Project title</div>
+            <div>{{ project.title }}</div>
+          </v-flex>
+          <v-flex xs6 sm4 md2>
+            <div class="caption grey--text">Person</div>
+            <div>{{ project.person }}</div>
+          </v-flex>
+          <v-flex xs6 sm4 md2>
+            <div class="caption grey--text">Due by</div>
+            <div>{{ project.due }}</div>
+          </v-flex>
+          <v-flex xs2 sm4 md2>
+            <div class="caption grey--text">Status</div>
+            <div>{{ project.status }}</div>
+          </v-flex>
+        </v-layout>
+        <v-divider></v-divider>
+      </v-card>
+
+    </v-container>
+   
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      projects: [
+        { title: 'Design a new website', person: 'The Net Ninja', due: '1st Jan 2019', status: 'ongoing', content: 'content'},
+        { title: 'Code up the homepage', person: 'Chun Li', due: '10th Jan 2019', status: 'complete', content: 'content'},
+        { title: 'Design video thumbnails', person: 'Ryu', due: '20th Dec 2018', status: 'complete', content: 'content'},
+        { title: 'Create a community forum', person: 'Gouken', due: '20th Oct 2018', status: 'overdue', content: 'content'},
+      ]
+    }
+  }
+}
+</script>
+
+<style>
+.project.complete{
+  border-left: 4px solid #3CD1C2;
+}
+.project.ongoing{
+  border-left: 4px solid orange
+}
+.project.overdue{
+  border-left: 4px solid tomato;
+}
+```
+
+# 16. [Chips](https://vuetifyjs.com/en/components/chips#chip)
+- 작은 정보를 보여주기위해 사용하는 컴포넌트
 
 
 
