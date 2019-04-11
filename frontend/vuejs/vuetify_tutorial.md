@@ -420,7 +420,27 @@ export default {
 # 16. [Chips](https://vuetifyjs.com/en/components/chips#chip)
 - 작은 정보를 보여주기위해 사용하는 컴포넌트
 
+```html
+<template>
+<v-flex xs2 sm4 md2>
+	<div class="right">
+	  <v-chip small :class="`${project.status} white--text my-2 caption`">{{ project.status }}</v-chip>
+	</div>
+</v-flex>
+</template>
+<style>
+.v-chip.complete{
+  background: #3cd1c2;
+}
+.v-chip.ongoing{
+  background: #ffaa2c;
+}
+.v-chip.overdue{
+  background: #f83e70;
+}
 
+</style>
+```
 
 
 
