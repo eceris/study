@@ -1,5 +1,6 @@
-youtube 의 [Vuetify tutorial](https://www.youtube.com/playlist?list=PL4cUxeGkcC9g0MQZfHwKcuB0Yswgb3gA5)을 보고 기록.
+# youtube 의 [Vuetify tutorial](https://www.youtube.com/playlist?list=PL4cUxeGkcC9g0MQZfHwKcuB0Yswgb3gA5)을 보고 기록.
 
+---
 1. [What is Vuetify?](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#1-what-is-vuetify)
 2. Setting Up Vuetify
 3. Vuetify Basics
@@ -19,6 +20,7 @@ youtube 의 [Vuetify tutorial](https://www.youtube.com/playlist?list=PL4cUxeGkcC
 17. Sorting Projects
 18. Tooltips
 19. Cards
+---
 
 # 1. What is Vuetify?
 - UI component library based on Google Material Design
