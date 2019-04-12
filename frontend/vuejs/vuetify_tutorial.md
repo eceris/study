@@ -1,25 +1,24 @@
 # youtube 의 [Vuetify tutorial](https://www.youtube.com/playlist?list=PL4cUxeGkcC9g0MQZfHwKcuB0Yswgb3gA5)을 보고 기록.
 
----
 1. [What is Vuetify?](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#1-what-is-vuetify)
-2. Setting Up Vuetify
-3. Vuetify Basics
-4. Text & Colors
-5. Button & Icons
-6. Breakpoints & Visibility
-7. Toolbars
-8. Navigation Drawers
-9. Themes
-10. Lists
-11. Adding Routes
-12. Padding & Margin
-13. The Grid System(part 1)
-14. The Grid System(part 2)
-15. Dummy Project Data
-16. Chips
-17. Sorting Projects
-18. Tooltips
-19. Cards
+2. [Setting Up Vuetify](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#2-setting-up-vuetify)
+3. [Vuetify Basics](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#3-vuetify-basics)
+4. [Text & Colors](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#4-text--colors)
+5. [Button & Icons](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#5-buttons--icons)
+6. [Breakpoints & Visibility](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#6-breakpoints--visibility)
+7. [Toolbars](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#7-toolbars)
+8. [Navigation Drawers](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#8-navigation-drawers)
+9. [Themes](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#9-themes)
+10. [Lists](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#10-lists)
+11. [Adding Routes](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#11-adding-routes)
+12. [Padding & Margin](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#12-padding--margin)
+13. [The Grid System(part 1)](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#13-the-grid-system---1)
+14. [The Grid System(part 2)](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#14-the-grid-system---2)
+15. [Dummy Project Data](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#15-dummy-project-data)
+16. [Chips](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#16-chips)
+17. [Sorting Projects](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#17-sorting-projects)
+18. [Tooltips](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#18-tooltips)
+19. [Cards](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#19-cards)
 ---
 
 # 1. What is Vuetify?
@@ -494,7 +493,7 @@ sortBy(prop) {
 	</v-tooltip>
 </v-layout>
 ```
-# 18. Cards
+# 19. Cards
 -
 
 
