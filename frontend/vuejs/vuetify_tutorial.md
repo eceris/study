@@ -1,27 +1,24 @@
 youtube 의 [Vuetify tutorial](https://www.youtube.com/playlist?list=PL4cUxeGkcC9g0MQZfHwKcuB0Yswgb3gA5)을 보고 기록.
-```
-- 1. [What is Vuetify?](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#1-what-is-vuetify)
-- 2. Setting Up Vuetify
-- 3. Vuetify Basics
-- 4. Text & Colors
-- 5. Button & Icons
-- 6. Breakpoints & Visibility
-- 7. Toolbars
-- 8. Navigation Drawers
-- 9. Themes
-- 10. Lists
-- 11. Adding Routes
-- 12. Padding & Margin
-- 13. The Grid System(part 1)
-- 14. The Grid System(part 2)
-- 15. Dummy Project Data
-- 16. Chips
-- 17. Sorting Projects
-- 18. Tooltips
-- 19. Cards
-```
 
-
+1. [What is Vuetify?](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#1-what-is-vuetify)
+2. Setting Up Vuetify
+3. Vuetify Basics
+4. Text & Colors
+5. Button & Icons
+6. Breakpoints & Visibility
+7. Toolbars
+8. Navigation Drawers
+9. Themes
+10. Lists
+11. Adding Routes
+12. Padding & Margin
+13. The Grid System(part 1)
+14. The Grid System(part 2)
+15. Dummy Project Data
+16. Chips
+17. Sorting Projects
+18. Tooltips
+19. Cards
 
 # 1. What is Vuetify?
 - UI component library based on Google Material Design
