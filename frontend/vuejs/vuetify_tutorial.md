@@ -1,4 +1,27 @@
-youtube 의 vuetify tutorial을 보고 기록.
+youtube 의 [Vuetify tutorial](https://www.youtube.com/playlist?list=PL4cUxeGkcC9g0MQZfHwKcuB0Yswgb3gA5)을 보고 기록.
+```
+- 1. [What is Vuetify?](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#1-what-is-vuetify)
+- 2. Setting Up Vuetify
+- 3. Vuetify Basics
+- 4. Text & Colors
+- 5. Button & Icons
+- 6. Breakpoints & Visibility
+- 7. Toolbars
+- 8. Navigation Drawers
+- 9. Themes
+- 10. Lists
+- 11. Adding Routes
+- 12. Padding & Margin
+- 13. The Grid System(part 1)
+- 14. The Grid System(part 2)
+- 15. Dummy Project Data
+- 16. Chips
+- 17. Sorting Projects
+- 18. Tooltips
+- 19. Cards
+```
+
+
 
 # 1. What is Vuetify?
 - UI component library based on Google Material Design
@@ -442,6 +465,38 @@ export default {
 </style>
 ```
 
+# 17. Sorting Projects
+- sorting 을 위해 javascript 에서 array 객체에 제공하는 sort 함수를 사용
+```javascript
+
+sortBy(prop) {
+	this.projects.sort((a,b) => a[prop] < b[prop] ? -1 : 1)	
+}
+```
+
+# 18. [Tooltips](https://vuetifyjs.com/en/components/tooltips#tooltip)
+- tooltip 을 사용하기 위해 `slot="activator"`을 이용하여 상위 컴포넌트에 tooltip을 꽂을꺼라는 것을 알려줌.
+
+```html
+<v-layout row justify-start class="mb-3">
+	<v-tooltip top>
+	  <v-btn small flat color="grey" @click="sortBy('title')" slot="activator">
+	    <v-icon small left>folder</v-icon>
+	    <span class="caption text-lowercase">By project name</span>
+	  </v-btn>
+	  <span>Sort by project name</span>
+	</v-tooltip>
+	<v-tooltip top>
+	  <v-btn small flat color="grey" @click="sortBy('person')" slot="activator">
+	    <v-icon small left>person</v-icon>
+	    <span class="caption text-lowercase">By Person</span>
+	  </v-btn>
+	  <span>Sort by project author</span>
+	</v-tooltip>
+</v-layout>
+```
+# 18. Cards
+-
 
 
 
