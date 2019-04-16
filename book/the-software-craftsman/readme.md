@@ -13,9 +13,9 @@
 - [11장 잘못된 면접 방식](https://github.com/eceris/study/blob/master/book/the-software-craftsman/readme.md#11-%EC%9E%98%EB%AA%BB%EB%90%9C-%EB%A9%B4%EC%A0%91-%EB%B0%A9%EC%8B%9D)
 - [12장 낮은 사기의 대가](https://github.com/eceris/study/blob/master/book/the-software-craftsman/readme.md#12-%EB%82%AE%EC%9D%80-%EC%82%AC%EA%B8%B0%EC%9D%98-%EB%8C%80%EA%B0%80)
 - [13장 배움의 문화](https://github.com/eceris/study/blob/master/book/the-software-craftsman/readme.md#13-%EB%B0%B0%EC%9B%80%EC%9D%98-%EB%AC%B8%ED%99%94)
-- [14장 기술적 변화의 실행]()
-- [15장 실용주의 장인정신]()
-- [16장 소프트웨어 장인으로서의 커리어]()
+- [14장 기술적 변화의 실행](https://github.com/eceris/study/blob/master/book/the-software-craftsman/readme.md#14-%EA%B8%B0%EC%88%A0%EC%A0%81-%EB%B3%80%ED%99%94%EC%9D%98-%EC%8B%A4%ED%96%89)
+- [15장 실용주의 장인정신](https://github.com/eceris/study/blob/master/book/the-software-craftsman/readme.md#15-%EC%8B%A4%EC%9A%A9%EC%A3%BC%EC%9D%98-%EC%9E%A5%EC%9D%B8%EC%A0%95%EC%8B%A0)
+- [16장 소프트웨어 장인으로서의 커리어](https://github.com/eceris/study/blob/master/book/the-software-craftsman/readme.md#16-%EC%86%8C%ED%94%84%ED%8A%B8%EC%9B%A8%EC%96%B4-%EC%9E%A5%EC%9D%B8%EC%9C%BC%EB%A1%9C%EC%84%9C%EC%9D%98-%EC%BB%A4%EB%A6%AC%EC%96%B4)
 
 ---
 
