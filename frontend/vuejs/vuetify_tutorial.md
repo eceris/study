@@ -21,6 +21,7 @@
 19. [Cards](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#19-cards)
 20. [Avatars](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#20-avatars)
 21. [Expansion Panels](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#21-expansion-panels)
+22. [Menus](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#22-menus)
 ---
 
 # 1. What is Vuetify?
@@ -659,8 +660,151 @@ export default {
 
 ```
 
+# 22. [Menus](https://vuetifyjs.com/en/components/menus#menu)
 
+- 드롭다운 형태의 메뉴
+- `v-menu`의 메뉴 버튼을 가리게 되는데 `offset-y` 는 드롭다운이 아래로 펼쳐지도록 한다.
 
+```html
+ <!-- dropdown menu -->
+  <v-menu offset-y>
+    <v-btn flat slot="activator" color="grey">
+      <v-icon left>expand_more</v-icon>
+      <span>Menu</span>
+    </v-btn>
+    <v-list>
+      <v-list-tile v-for="link in links" :key="link.text" router :to="link.route">
+        <v-list-tile-title>{{ link.text }}</v-list-tile-title>
+      </v-list-tile>
+    </v-list>
+  </v-menu>
+```
+# 23. [Popups](https://vuetifyjs.com/en/components/dialogs#dialog)
+- `v-dialog`는 popup 형태를 제공하는 컴포넌트
+- `v-btn` 은 팝업을 부르는 부모 컴포넌트에 nested 형태로 들어가는 것이 특징<sup>팝업을 부르는 버튼까지도 해당 컴포넌트에 구현.</sup>
+
+```html
+<template>
+  <v-dialog max-width="600px">
+    <v-btn flat slot="activator" class="success">Add New Project</v-btn>
+    <v-card>
+      <v-card-title>
+        <h2>Add a New Project</h2>
+      </v-card-title>
+    </v-card>
+  </v-dialog>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+    }
+  }
+}
+</script>
+```
+
+# 24. [Form Basics](https://vuetifyjs.com/en/components/forms#form)
+- form 의 컴포넌트에 대한 내용은 너무 많아서 [공식 문서](https://vuetifyjs.com/en/components/text-fields)에서 확인 할 것.
+- 특이한 건 없지만 `prepend-icon`에 material 아이콘을 넣을 수 있음.
+
+```html
+<template>
+  <v-dialog max-width="600px">
+    <v-btn flat slot="activator" class="success">Add New Project</v-btn>
+
+    <v-card>
+      <v-card-title>
+        <h2>Add a New Project</h2>
+      </v-card-title>
+
+      <v-card-text>
+        <v-form class="px-3">
+          <v-text-field v-model="title" label="Title" prepend-icon="folder"></v-text-field>
+          <v-textarea v-model="content" label="Information" prepend-icon="edit"></v-textarea>
+          <v-spacer></v-spacer>
+          <v-btn flat @click="submit" class="success mx-0 mt-3">Add Project</v-btn>
+        </v-form>
+      </v-card-text>
+    </v-card>
+
+  </v-dialog>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      title: '',
+      content: ''
+    }
+  },
+  methods: {
+    submit() {
+      console.log(this.title, this.content)
+    }
+  }
+}
+</script>
+```
+
+# 25. [Datepickers](https://vuetifyjs.com/en/components/date-pickers#date-month-picker)
+- Datepicker 를 이용하기 위해서는 `v-menu` 컴포넌트를 사용해 드랍다운처럼 구현.
+- `v-date-picker` 의 @change 이벤트는 값이 변경되면 바로 해당 창을 닫기 위해 구현.
+- 
+```html
+<template>
+  <v-dialog max-width="600px">
+    <v-btn flat slot="activator" class="success">Add New Project</v-btn>
+    <v-card>
+      <v-card-title>
+        <h2>Add a New Project</h2>
+      </v-card-title>
+      <v-card-text>
+        <v-form class="px-3">
+          <v-text-field v-model="title" label="Title" prepend-icon="folder"></v-text-field>
+          <v-textarea v-model="content" label="Information" prepend-icon="edit"></v-textarea>
+
+          <v-menu v-model="menu" :close-on-content-click="false">
+            <v-text-field slot="activator" :value="formattedDate" clearable label="Due date" prepend-icon="date_range"></v-text-field>
+            <v-date-picker v-model="due" @change="menu = false"></v-date-picker>
+          </v-menu>
+
+          <v-spacer></v-spacer>
+
+          <v-btn flat @click="submit" class="success mx-0 mt-3">Add Project</v-btn>
+        </v-form>
+      </v-card-text>
+    </v-card>
+  </v-dialog>
+</template>
+
+<script>
+import format from 'date-fns/format'
+export default {
+  data() {
+    return {
+      title: '',
+      content: '',
+      due: null,
+      menu: false
+    }
+  },
+  methods: {
+    submit() {
+      console.log(this.title, this.content)
+    }
+  },
+  computed: {
+    formattedDate () {
+      console.log(this.due)
+      return this.due ? format(this.due, 'Do MMM YYYY') : ''
+    }
+  }
+}
+</script>
+```
 
 
 
