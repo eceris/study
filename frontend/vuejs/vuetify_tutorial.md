@@ -22,6 +22,9 @@
 20. [Avatars](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#20-avatars)
 21. [Expansion Panels](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#21-expansion-panels)
 22. [Menus](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#22-menus)
+23. [Popups](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#23-popups)
+24. [Form Basics](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#24-form-basics)
+25. [Datepickers](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#25-datepickers)
 ---
 
 # 1. What is Vuetify?
