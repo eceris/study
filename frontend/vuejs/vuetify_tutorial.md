@@ -19,6 +19,8 @@
 17. [Sorting Projects](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#17-sorting-projects)
 18. [Tooltips](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#18-tooltips)
 19. [Cards](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#19-cards)
+20. [Avatars](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#20-avatars)
+21. [Expansion Panels](https://github.com/eceris/study/blob/master/frontend/vuejs/vuetify_tutorial.md#21-expansion-panels)
 ---
 
 # 1. What is Vuetify?
@@ -493,8 +495,180 @@ sortBy(prop) {
 	</v-tooltip>
 </v-layout>
 ```
-# 19. Cards
--
+# 19. [Cards](https://vuetifyjs.com/en/components/cards#card)
+- 이미지를 바탕으로 한 카드형태의 뷰
+- 아래는 `v-flex` 컴포넌트로 뷰포인트별 정렬을 지정하고 `v-card` 로 카드형태의 아이템을 나열하였다.
+- `v-responsive` 컴포넌트로 이미지를 리액티브하게 표현.
+
+```
+<template>
+  <div class="team">
+    <h1 class="subheading grey--text">Team</h1>
+
+    <v-container class="my-5">
+
+      <v-layout row wrap>
+        <v-flex xs12 sm6 md4 lg3 v-for="person in team" :key="person.name">
+          <v-card flat class="text-xs-center ma-3">
+            <v-responsive class="pt-4">
+              image here
+            </v-responsive>
+            <v-card-text>
+              <div class="subheading">{{ person.name }}</div>
+              <div class="grey--text">{{ person.role }}</div>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn flat color="grey">
+                <v-icon small left>message</v-icon>
+                <span class="">Message</span>
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-flex>
+      </v-layout>
+
+    </v-container>
+    
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      team: [
+        { name: 'The Net Ninja', role: 'Web developer' },
+        { name: 'Ryu', role: 'Graphic designer' },
+        { name: 'Chun Li', role: 'Web developer' },
+        { name: 'Gouken', role: 'Social media maverick' },
+        { name: 'Yoshi', role: 'Sales guru'}
+      ]
+    }
+  }
+}
+</script>
+```
+
+# 20. [Avatars](https://vuetifyjs.com/en/components/avatars#avatar)
+- 이미지와 같은 asset은 `/public` 에서 기본적으로 서빙한다. 
+- `v-avatar` 컴포넌트를 사용.
+
+```html
+<template>
+  <div class="team">
+    <h1 class="subheading grey--text">Team</h1>
+
+    <v-container class="my-5">
+
+      <v-layout row wrap>
+        <v-flex xs12 sm6 md4 lg3 v-for="person in team" :key="person.name">
+          <v-card flat class="text-xs-center ma-3">
+            <v-responsive class="pt-4">
+              <v-avatar size="100" class="grey lighten-2">
+                <img :src="person.avatar">
+              </v-avatar>
+            </v-responsive>
+            <v-card-text>
+              <div class="subheading">{{ person.name }}</div>
+              <div class="grey--text">{{ person.role }}</div>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn flat color="grey">
+                <v-icon small left>message</v-icon>
+                <span class="">Message</span>
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-flex>
+      </v-layout>
+
+    </v-container>
+    
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      team: [
+        { name: 'The Net Ninja', role: 'Web developer', avatar: '/avatar-1.png' },
+        { name: 'Ryu', role: 'Graphic designer', avatar: '/avatar-2.png' },
+        { name: 'Chun Li', role: 'Web developer', avatar: '/avatar-3.png' },
+        { name: 'Gouken', role: 'Social media maverick', avatar: '/avatar-4.png' },
+        { name: 'Yoshi', role: 'Sales guru', avatar: '/avatar-5.png'}
+      ]
+    }
+  }
+}
+</script>
+```
+# 21. [Expansion Panels](https://vuetifyjs.com/en/components/expansion-panels#expansion-panel)
+- 펼쳐지는 패널
+- `Array.filter()`를 이용하여 데이터 필터링
+
+```html
+<template>
+  <div class="team">
+    <h1 class="subheading grey--text">Team</h1>
+
+    <v-container class="my-5">
+
+      <v-layout row wrap>
+        <v-flex xs12 sm6 md4 lg3 v-for="person in team" :key="person.name">
+          <v-card flat class="text-xs-center ma-3">
+            <v-responsive class="pt-4">
+              <v-avatar size="100" class="grey lighten-2">
+                <img :src="person.avatar">
+              </v-avatar>
+            </v-responsive>
+            <v-card-text>
+              <div class="subheading">{{ person.name }}</div>
+              <div class="grey--text">{{ person.role }}</div>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn flat color="grey">
+                <v-icon small left>message</v-icon>
+                <span class="">Message</span>
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-flex>
+      </v-layout>
+
+    </v-container>
+    
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      team: [
+        { name: 'The Net Ninja', role: 'Web developer', avatar: '/avatar-1.png' },
+        { name: 'Ryu', role: 'Graphic designer', avatar: '/avatar-2.png' },
+        { name: 'Chun Li', role: 'Web developer', avatar: '/avatar-3.png' },
+        { name: 'Gouken', role: 'Social media maverick', avatar: '/avatar-4.png' },
+        { name: 'Yoshi', role: 'Sales guru', avatar: '/avatar-5.png'}
+      ]
+    }
+  }
+}
+</script>
+
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
