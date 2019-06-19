@@ -255,9 +255,23 @@
 - 각 트랜잭션마다 새로운 커넥션을 맺고 끊기 때문에 시간과 대역폭이 소요.
 
 ## 지속 커넥션 
-- 처리가 완료된 후에도 계속 연결된 상태로 있는 TCP 커넥션을 지속 커넥션이라고 함.
+- 처리가 완료된 후에도 계속 연결된 상태로 있는 TCP 커넥션을 지속 커넥션이라고 함.(http 1.1이후로는 기본이 지속 커넥션)
 - 보통 병렬 커넥션과 함께 사용할 때 가장 효과적.
 - `Keep-Alive` 커넥션은 사용하지말것. 이것은 Http 1.0 에서 커스텀하게 사용하는 것으로 만약 사용한다면 클라이언트는 `Connection: Keep-Alive` 요청 헤더를 보내야함.
+
+### keep-alive 동작
+- `Connection : Keep-Alive` 헤더가 있어야 `Keep-Alive` 가 동작하며 옵션을 지정 가능.
+- 아래는 서버가 약 5개의 추가 트랜잭션이 처리될 동안 커넥션을 유지하거나, 2분 동안 커넥션을 유지하라는 내용의 Keep-Alive 응답헤더다.
+```
+Connection: Keep-Alive
+Keep-Alive: max=5, timeout=120
+```
+- Keep-Alive HTTP/1.0 에서 기본으로 사용되지 않음.
+- 커넥션을 유지하기 위해서는 정확한 `Content-Length`값과 멀티파티 미디어 형식<sup>multipart media type</sup>, 청크 전송 인코딩<sup>chunk transfer encoding</sup>으로 인코드 되어야 함.
+- `Connection` 헤더를 무조건 전달하는 멍청한 프락시로 인해 `Proxy-Connection` 이라는 헤더가 생기기도 함. 멍청한 프락시는 `Proxy-Connection`를 이해하지 못하지만 영리한 프락시는 이해한다.
+
+### HTTP/1.1의 지속 커넥션
+- HTTP/1.0 의 `keep-alive` 와 다르게 HTTP/1.1 은 기본 지속 커넥션이므로 , 트랜잭션이 끝난 후 끊으려면 `Connection: close`헤더를 명시 해야함.
 
 ## 파이프라인 커넥션 
 - 지속 커넥션을 통해 파이프라이닝 할 수 있는데, POST 요청과 같은 비멱등 요청에는 사용하면 안됨.
