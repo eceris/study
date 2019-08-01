@@ -48,7 +48,6 @@ if (cart.isPresent()) {
 - 이게 중요한게 사용하지 않는데도 연산을 수행한다는 것인데 퍼포먼스 측면에서는 마이너스 요소다.
 이런 문맥에서 보면 `orElse()`를 이미 선언된<sup>static final</sup> default object 만 사용해야하는 이유이다.
 
-- 피해야 하는 코드
 ```java
 // AVOID
 public static final String USER_STATUS = "UNKNOWN";
@@ -63,7 +62,6 @@ public String findUserStatus(long id) {
 }
 ```
 
-- 선호하는 코드
 ```java
 // PREFER
 public static final String USER_STATUS = "UNKNOWN";
@@ -78,7 +76,6 @@ public String findUserStatus(long id) {
 - `Optional.orElseGet()`를 사용하는 것은 `isPresent() - get()`을 대체하는 아주 우아한 방법이다. 중요한 것은 `orElseGet()`의 파라미터가 `Supplier` 라는 것. 이게 의미하는건 실제로 `Optional` value가 존재하지 않을 때, `Supplier`가 실행된다는 것.
 - 사실 3번의 `Optional.orElse()` 보다 성능 측면에서 이득이 있다. 
 
-- 피해야할 코드
 ```java
 // AVOID
 public String computeStatus() {
@@ -105,7 +102,6 @@ public String findUserStatus(long id) {
 }
 ```
 
-- 선호하는 코드
 ```java
 // PREFER
 public String computeStatus() {
@@ -132,7 +128,6 @@ public String findUserStatus(long id) {
 # 6. 만약 현재 아무값도 존재하지 않느다면, 명시적인 Exception을 던지기 위해 `orElseThrow(Supplier<? extends X> exceptionSupplier)` 를 사용하라.
 - `Optional.orElseThrow()`를 사용하는 것은 `isPresent() - get()`을 대체하는 아주 우아한 방법이다. 
 
-- 피해야할 코드
 ```java
 // AVOID
 public String findUserStatus(long id) {
@@ -145,7 +140,6 @@ public String findUserStatus(long id) {
 }
 ```
 
-- 선호하는 코드
 ```java
 // PREFER
 public String findUserStatus(long id) {
@@ -157,7 +151,6 @@ public String findUserStatus(long id) {
 # 7. 만약 Null reference가 필요한 Optional 을 사용하려면 `orElse(null)` 을 사용하라.
 - 특정한 상황에서 null ref 가 필요하다면 아래와 같이 사용할 것.
 
-- 피해야할 코드
 ```java
 // AVOID
 Method myMethod = ... ;
@@ -172,7 +165,6 @@ if (instanceMyClass.isPresent()) {
 }
 ```
 
-- 선호하는 코드
 ```java
 // PREFER
 Method myMethod = ... ;
@@ -185,7 +177,6 @@ myMethod.invoke(instanceMyClass.orElse(null), ...);
 
 # 8. 만약 값이 존재한다면 Optional 을 consume 하라, 만약 값이 존재하지 않는다면 아무것도 하지말고, 이게 Optional.ifPresent()의 역할이다.
 
-- 피해야할 코드
 ```java
 
 // AVOID
@@ -196,7 +187,6 @@ if (status.isPresent()) {
 }
 ```
 
-- 선호하는 코드
 ```java
 // PREFER
 Optional<String> status ... ;
