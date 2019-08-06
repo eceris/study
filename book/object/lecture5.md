@@ -59,8 +59,43 @@ Movie의 주된 책임은 영화 요금을 계산하는 것, 영화 요금을 �
 - B가 A 객체를 초기화하는데 필요한 데이터를 가지고 있다.
 ```
 
+## 구현을 통한 검증
 
+### DiscountCondition 개선하기
+- 변경에 취약한 클래스를 포함하고 있음.
+```
+예를 들면 
+1. 새로운 할인 조건 추가 : isSatisfiedBy 메서드의 분기문을 수정해야함 
+2. 순번조건을 판단하는 로직 변경 : isSatisfiedBySequence 메서드의 내부구현을 수정해야 함 
+3. 기간 조건을 판단하는 로직이 변경되는 경우 : isSatisfiedByPeriod 메서드의 내부구현을 수정해야 함
+```
 
+- 인스턴스 변수가 초기화 되는 시점을 보자. 응집도가 높은 클래스는 인스턴스를 생성할 때 모든 속성을 함께 초기화 함.
+- 함께 초기화되는 속성을 기준으로 코드를 분리할 것
+
+### 다형성을 통해 분리하기
+- SequenceCondition 과 PeriodCondition은 아무 차이도 없음. 같은 역할임
+![5_6_role_movie_discountcondition.jpg](5_6_role_movie_discountcondition.jpg)
+
+#### POLYMORPHISM
+```
+객체의 타입에 따라 변하는 로직이 있을때는 타입을 명시적으로 정의하고 각 타입에 다형적으로 행동하는 책임을 할당하라. 
+예를 들면, 조건을 if ~ else 로 설계한다면 새로운 변화에 무조건 코드를 수정해야 함. 다형성을 이용해 새로운 변화를 다루기 쉽게 확장하라.
+```
+
+#### PROTECTED VARIATIONS
+```
+새로운 할인 조건이 추가된다고 하더라도 DiscountConditions이라는 역할이 Movie로부터 PeriodCondition과 SequenceCondition의 존재를 감춤.
+이렇게 함으로써 변화와 불안정성이 다른 요소에 나쁜 영향을 미치지 않게 함.
+```
+
+![5_7_responsibility_driven.jpg](5_7_responsibility_driven.jpg)
+
+### 변경과 유연성
+- 코드를 이해하고 수정하기 쉽도록 최대한 단순하게 설계하는 방법, 변경을 유연하게 수용하도록 만드는 방법.
+- 보통은 전자가 더 좋은 방법이지만, 유사한 변경이 반복적으로 일어날 경우 복잡성이 상승하더라도 유연성을 추가하는 두번째 방법이 더 좋음.
+
+![5_8.jpg](5_8.jpg)
 
 
 
