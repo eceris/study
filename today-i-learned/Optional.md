@@ -194,8 +194,9 @@ Optional<String> status ... ;
 status.ifPresent(System.out::println);
 ```
 
-
 # 9. 만약 값이 존재한다면 Optional 을 consume 하라, 만약 값이 존재하지 않는다면 `Empty-based action` 을 수행하라. 이것이 Optional.ifPresentElse() 의 역할이다.
+- Java9 에서 `Optional.ifPresentOrElse()`는 `isPresent() - get()`을 대체하는 아주 우아한 방법이다.
+
 # 10. 만약에 값이 존재하면, Optional 로 set/return 하라. 값이 없는 경우, other Optional 로 set/return 하라. 이것이 자바9의 Optional.or() 의 역할이다.
 # 11. Optional.orElse / orElseXXX 는 람다식에서 isPresent()-get() 코드의 완벽한 대체제이다. 
 # 12. 하나의 목적을 달성하기 위해 Optional 메소드를 체이닝 하는 것을 피해라.
