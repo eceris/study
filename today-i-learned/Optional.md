@@ -196,9 +196,127 @@ status.ifPresent(System.out::println);
 
 # 9. 만약 값이 존재한다면 Optional 을 consume 하라, 만약 값이 존재하지 않는다면 `Empty-based action` 을 수행하라. 이것이 Optional.ifPresentElse() 의 역할이다.
 - Java9 에서 `Optional.ifPresentOrElse()`는 `isPresent() - get()`을 대체하는 아주 우아한 방법이다.
+- `ifPresent()`와 비슷한데 `else` 도 커버해준다.
+
+```java
+// AVOID
+Optional<String> status = ... ;
+if(status.isPresent()) {
+    System.out.println("Status: " + status.get());
+} else {
+    System.out.println("Status not found");
+}
+```
+
+```java
+// PREFER
+Optional<String> status = ... ;
+status.ifPresentOrElse(
+    System.out::println, 
+    () -> System.out.println("Status not found")
+);
+```
 
 # 10. 만약에 값이 존재하면, Optional 로 set/return 하라. 값이 없는 경우, other Optional 로 set/return 하라. 이것이 자바9의 Optional.or() 의 역할이다.
+- java9에 추가됨.
+- 가끔 non-empty `Optional`을 위해, Optional 로 set/return 을 하고 싶다. 그리고 Optional 이 비어있을때, 또 다른 Optional을 실행시키고 싶다. 
+- `orElse()` 및 `ElseGet()` 메서드는 Optional로 래핑되지 않은 값을 반환하므로이 작업을 수행 할 수 없습니다.
+- Java 9의 `Optional.or()` 메서드는 값을 Optional로 래핑하여 반환할 수 있다. 그렇지 않으면 supplier에 의해 생성된 Optional을 반환한다.
+
+```java
+// AVOID
+public Optional<String> fetchStatus() {
+    Optional<String> status = ... ;
+    Optional<String> defaultStatus = Optional.of("PENDING");
+    if (status.isPresent()) {
+        return status;
+    } else {
+        return defaultStatus;
+    }  
+}
+```
+
+```java
+
+// AVOID
+public Optional<String> fetchStatus() {
+    Optional<String> status = ... ;
+    return status.orElseGet(() -> Optional.<String>of("PENDING"));
+}
+```
+
+```java
+// PREFER
+public Optional<String> fetchStatus() {
+    Optional<String> status = ... ;
+    Optional<String> defaultStatus = Optional.of("PENDING");
+    return status.or(() -> defaultStatus);
+    // or, without defining "defaultStatus"
+    return status.or(() -> Optional.of("PENDING"));
+}
+```
+
 # 11. Optional.orElse / orElseXXX 는 람다식에서 isPresent()-get() 코드의 완벽한 대체제이다. 
+- 스트림에서 `Optional`(e.g.,findFirst(), findAny(), reduce(),...) 객체를 반환하는 연산자들이 있다. 이것을 isPresent()-get() 연산자로 접근하는 것은 스트림의 체이닝을 깨뜨리고, if-else 문을 추가하여 보기에 좋지 않다. 이러한 경우에는 `orElse()` 혹은 `orElseGet()`을 사용하여 체이닝을 이어가자.
+
+
+```java
+// AVOID
+List<Product> products = ... ;
+Optional<Product> product = products.stream()
+    .filter(p -> p.getPrice() < price)
+    .findFirst();
+if (product.isPresent()) {
+    return product.get().getName();
+} else {
+    return "NOT FOUND";
+}
+```
+
+```java
+// AVOID
+List<Product> products = ... ;
+Optional<Product> product = products.stream()
+    .filter(p -> p.getPrice() < price)
+    .findFirst();
+return product.map(Product::getName)
+    .orElse("NOT FOUND");
+```
+
+```java
+// PREFER
+List<Product> products = ... ;
+return products.stream()
+    .filter(p -> p.getPrice() < price)
+    .findFirst()
+    .map(Product::getName)
+    .orElse("NOT FOUND");
+
+```
+
+```java
+// AVOID
+Optional<Cart> cart = ... ;
+Product product = ... ;
+...
+if(!cart.isPresent() || 
+   !cart.get().getItems().contains(product)) {
+    throw new NoSuchElementException();
+}
+```
+
+```java
+
+// PREFER
+Optional<Cart> cart = ... ;
+Product product = ... ;
+...
+cart.filter(c -> c.getItems().contains(product)).orElseThrow();
+
+```
+
+
+
 # 12. 하나의 목적을 달성하기 위해 Optional 메소드를 체이닝 하는 것을 피해라.
 # 13. Optional 타입으로 필드 선언은 하지 말라.
 # 14. 생성자의 파라미터로 Optional 을 사용하지말라
