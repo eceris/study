@@ -1,5 +1,5 @@
 
-[여기 보고 정리 한 것.] (https://dzone.com/articles/using-optional-correctly-is-not-optional)
+[여기 보고 정리 한 것.](https://dzone.com/articles/using-optional-correctly-is-not-optional)
 
 # 작성중
 
