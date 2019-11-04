@@ -1,0 +1,50 @@
+
+buildscript {
+    ext {
+        springBootVersion = '1.5.1.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE"
+    }
+}
+
+subprojects {
+    group 'com.blogcode'
+    version '1.0'
+
+    apply plugin: 'java'
+    apply plugin: 'spring-boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    sourceCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
+
+    task hello {
+        doLast {
+            task -> println "I'm $task.project.name"
+        }
+    }
+}
+
+project(':module-api') {
+    dependencies {
+        compile project(':module-common')
+    }
+}
+
+project(':module-web') {
+    dependencies {
+        compile project(':module-common')
+    }
+}
