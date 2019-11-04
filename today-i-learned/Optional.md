@@ -317,9 +317,87 @@ cart.filter(c -> c.getItems().contains(product)).orElseThrow();
 
 
 
-# 12. 하나의 목적을 달성하기 위해 Optional 메소드를 체이닝 하는 것을 피해라.
+# 12. 하나의 값을 얻기 위해 과도하게 Optional 메소드를 체이닝 하는 것을 피해라.
+- 단순한 값을 얻기 위해 Optional을 사용하지 마라.
+```java
+// AVOID
+public String fetchStatus() {
+    String status = ... ;
+    return Optional.ofNullable(status).orElse("PENDING");
+}
+
+```
+
+```java
+// PREFER
+public String fetchStatus() {
+    String status = ... ;
+    return status == null ? "PENDING" : status;
+}
+```
+
 # 13. Optional 타입으로 필드 선언은 하지 말라.
+- Optional 을 setter나 생성자의 인자로 사용하지 마라. Optional 은 필드에 사용하기 위한 것이 아니고, Serializable을 구현하지도 않는다.
+- 또한, Optional 클래스는 Java Bean의 property로 사용하기 위한 것이 아니다.
+
+```java
+// AVOID
+public class Customer {
+    [access_modifier] [static] [final] Optional<String> zip;
+    [access_modifier] [static] [final] Optional<String> zip = Optional.empty();
+    ...
+}
+```
+```java
+// PREFER
+public class Customer {
+    [access_modifier] [static] [final] String zip;
+    [access_modifier] [static] [final] String zip = "";
+    ...
+```
+
+
 # 14. 생성자의 파라미터로 Optional 을 사용하지말라
+- Optional을 필드 또는 메소드의 인자로 사용하지 마라.
+
+```java
+// AVOID
+public class Customer {
+    private final String name;               // cannot be null
+    private final Optional<String> postcode; // optional field, thus may be null
+    public Customer(String name, Optional<String> postcode) {
+        this.name = Objects.requireNonNull(name, () -> "Name cannot be null");
+        this.postcode = postcode;
+    }
+    public Optional<String> getPostcode() {
+        return postcode;
+    }
+    ...
+}
+```
+
+```java
+// PREFER
+public class Customer {
+    private final String name;     // cannot be null
+    private final String postcode; // optional field, thus may be null
+    public Cart(String name, String postcode) {
+        this.name = Objects.requireNonNull(name, () -> "Name cannot be null");
+        this.postcode = postcode;
+    }
+    public Optional<String> getPostcode() {
+        return Optional.ofNullable(postcode);
+    }
+    ...
+}
+```
+- 근데 prefer 라고 해서 이 방법으로 모두 하는 것은 좋지 않음. 
+- 대부분의 경우 getter는 컬렉션 또는 배열을 반환하며,이 경우에는 Optional 대신 빈 컬렉션 / 배열을 반환하는 것을 더 나음.
+
+
+
+
+
 # 15. setter의 인자로 Optional을 사용하지 말라.
 # 16. 메소드의 인자로 Optional을 사용하지 말라.
 # 17. empty collection 이나 array 를 반환할 때 Optional을 사용하지 말라.
