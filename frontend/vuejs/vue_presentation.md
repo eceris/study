@@ -2,19 +2,16 @@
 # 빠르게 검사하는 숙제
 
 # 뷰가 뭘까?
- - 대략적인 설명은 [여기....](https://git-internal-ad.kabang.io/prodo.hyun/aventador/blob/develop/about.md)
  - [공식 홈피에도 잘 나와있어요...](https://kr.vuejs.org/v2/guide/index.html)
  
 # 그럼 니가 한건 뭐야?
 
 ## View
 - 아벤타도르에서 컴포넌트를 담는 틀(router 를 통해 들어오는 화면)
-- [코드를 봅시다](https://git-internal-ad.kabang.io/prodo.hyun/aventador/tree/develop/src/views/report)
 
 ## [Component](https://kr.vuejs.org/v2/guide/components.html)
 - 아벤타도르에서 재사용가능한 코드블록
 - 컴포넌트를 조합해서 화면을 만든다
-- [코드를 봅시다](https://git-internal-ad.kabang.io/prodo.hyun/aventador/tree/develop/src/components/report)
 
 ## [Vuex](https://vuex.vuejs.org/)
 - state
@@ -23,13 +20,11 @@
 - actions
 - 그래서 어떻게 사용했는지?
 	- 뷰 이동간 데이터를 들고 다니지 않고, store 에 넣어놓고 사용하며, 마지막 앱에게 데이터를 던져줄 때, 사용.
-	- [코드를 봅시다](https://git-internal-ad.kabang.io/prodo.hyun/aventador/tree/develop/src/infra/store)
 	
 ## Http
 - Axios
 - 그래서 어떻게 사용했는지?
 	- 인증에 대한 내용, 타임아웃 등만 설정할 예정
-    - [코드를 봅시다](https://git-internal-ad.kabang.io/prodo.hyun/aventador/blob/develop/src/infra/http)
 	
 ## Test
 
@@ -44,11 +39,8 @@
  - 근데 Dependency가 있는 라이브러리들의(Babel 버전과 Mocha 버전등) version mismatch로 호환을 맞춰주기 힘듬
  - 그리고 Jest 는 간단히 SnapshotHtml element에 직접 접근하여 검증하기 위한 html snapshot 테스트도 지원함.
  - test coverage 도 기본적으로 지원.
- - [코드를 봅시다](https://git-internal-ad.kabang.io/prodo.hyun/aventador/blob/develop/test/views/__snapshots__/Issuance.spec.js.snap)
  
 ### 어떻게 작성했는가?
-- [코드를 봅시다](https://git-internal-ad.kabang.io/prodo.hyun/aventador/blob/develop/test/Sample.spec.js)
-- [코드를 봅시다](https://git-internal-ad.kabang.io/prodo.hyun/aventador/blob/develop/test/views/__snapshots__/Issuance.spec.js.snap)
 
 ## Environment
 
