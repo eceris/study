@@ -8,6 +8,7 @@
 - [2018-3Q](https://github.com/eceris/study/blob/master/today-i-learned/2018-3Q.md)
 
 ## BOOK
+- [클린코더](https://github.com/eceris/study/blob/master/book/the-clean-coder/readme.md)
 - [오브젝트](https://github.com/eceris/study/blob/master/book/object/readme.md)
 - [소프트웨어 장인](https://github.com/eceris/study/blob/master/book/the-software-craftsman/readme.md)
 - [Release it!](https://github.com/eceris/study/blob/master/book/release-it/README.md)
