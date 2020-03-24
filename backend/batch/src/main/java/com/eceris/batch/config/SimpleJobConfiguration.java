@@ -5,6 +5,8 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -51,6 +53,17 @@ public class SimpleJobConfiguration {
                         .build());
         stepService.getSteps()
                 .forEach(step -> jobBuilder.next(step));
+        jobBuilder.listener(new JobExecutionListener() {
+            @Override
+            public void beforeJob(JobExecution jobExecution) {
+                log.info(">>>>> before job >>>>>");
+            }
+
+            @Override
+            public void afterJob(JobExecution jobExecution) {
+                log.info(">>>>> after job >>>>>");
+            }
+        });
         return jobBuilder.build();
     }
 

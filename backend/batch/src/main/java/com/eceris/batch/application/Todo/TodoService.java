@@ -1,18 +1,17 @@
 package com.eceris.batch.application.Todo;
 
 import com.eceris.batch.domain.Todo;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.cloud.openfeign.FeignClientsConfiguration;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.stereotype.Service;
 
-@FeignClient(
-        value = "todoA",
-        url = "https://jsonplaceholder.typicode.com",
-        configuration = {FeignClientsConfiguration.class})
-public interface TodoService {
+import java.util.List;
 
-    @GetMapping("/todos/{id}")
-    Todo getTodo(@PathVariable(value = "id") String id);
+@Service
+public class TodoService {
+
+
+    public int save(List<Todo> todos) {
+        return todos.size();
+
+    }
 
 }

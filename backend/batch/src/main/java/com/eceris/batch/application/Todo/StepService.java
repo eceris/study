@@ -18,7 +18,9 @@ import java.util.stream.Collectors;
 public class StepService {
 
     private final StepBuilderFactory stepBuilderFactory;
+    private final TodoFeignService feignService;
     private final TodoService service;
+
 
     private static final List<String> NAMES = Lists.newArrayList("KOOKMINBANK", "SHINHANBANK", "KBANK");
 
@@ -26,10 +28,12 @@ public class StepService {
         return NAMES.stream()
                 .map(name -> stepBuilderFactory.get(name)
                         .tasklet((contribution, chunkContext) -> {
-                            log.info(">>>>> {} Step", name);
-                            Todo todo1 = service.getTodo("1");
-                            Todo todo2 = service.getTodo("2");
-                            Todo todo3 = service.getTodo("3");
+//                            log.info(">>>>> {} Step", name);
+                            Todo todo1 = feignService.getTodo("1");
+                            Todo todo2 = feignService.getTodo("2");
+                            Todo todo3 = feignService.getTodo("3");
+
+                            int save = service.save(Lists.newArrayList(todo1, todo2, todo3));
 
                             log.info(">>>>> {}", String.join(", ", Lists.newArrayList(todo1.getTitle(), todo2.getTitle(), todo3.getTitle())));
                             return RepeatStatus.FINISHED;
