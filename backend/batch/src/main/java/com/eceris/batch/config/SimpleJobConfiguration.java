@@ -67,4 +67,33 @@ public class SimpleJobConfiguration {
         return jobBuilder.build();
     }
 
+    @Bean
+    public Job job(Step openbankServiceUseLogStep) {
+        return jobBuilderFactory.get("openbankServiceUseLogJob")
+                .start(openbankServiceUseLogStep)
+                .build();
+    }
+
+    @Bean
+    public Step openbankServiceUseLogStep(Tasklet openbankServiceUseLogTasklet) {
+        return stepBuilderFactory.get("openbankServiceUseLogStep")
+                .tasklet(openbankServiceUseLogTasklet)
+                .listener(new JobExecutionListener() {
+                    @Override
+                    public void beforeJob(JobExecution jobExecution) {
+                        final String baseDt = LocalDateTime.now().minusDays(1).format(SumatraUtil.FORMATTER_YYYYMMDD);
+                        log.info("StartJob: {} - {}", jobExecution.getJobInstance().getJobName(), baseDt);
+                        jobExecution.getExecutionContext().put("baseDt", baseDt);
+                    }
+
+
+                    @Override
+                    public void afterJob(JobExecution jobExecution) {
+                        log.info(">>>>> after job >>>>>");
+                    }
+                })
+                .build();
+    }
+
+
 }
