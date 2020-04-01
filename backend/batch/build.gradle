@@ -37,7 +37,7 @@ dependencies {
     }
     testImplementation 'io.projectreactor:reactor-test'
     testImplementation 'org.springframework.batch:spring-batch-test'
-    runtimeOnly 'com.h2database:h2'
+    compile 'com.h2database:h2'
 }
 dependencyManagement {
     imports {
