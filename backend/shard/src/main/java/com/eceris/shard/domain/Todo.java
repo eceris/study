@@ -1,6 +1,7 @@
 package com.eceris.shard.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,6 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 @Entity
+@Builder
 public class Todo {
 
     @Id
@@ -21,12 +23,12 @@ public class Todo {
     private String title;
     private boolean completed;
 
-    @CreatedDate
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+//    @CreatedDate
+//    @Temporal(TemporalType.TIMESTAMP)
+//    private Date createdAt;
 
-    @PrePersist
-    public void init() {
-        this.createdAt = new Date();
-    }
+//    @PrePersist
+//    public void init() {
+//        this.createdAt = new Date();
+//    }
 }
