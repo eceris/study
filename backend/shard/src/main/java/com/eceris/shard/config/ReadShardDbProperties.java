@@ -6,10 +6,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 
-@ConfigurationProperties(prefix = "db.sharding")
+@ConfigurationProperties(prefix = "db.shard.ro")
 @Getter
 @Setter
-public class DbProperties {
+public class ReadShardDbProperties {
 
     private String username;
     private String password;
