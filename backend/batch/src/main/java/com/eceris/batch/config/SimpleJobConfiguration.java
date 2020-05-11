@@ -6,13 +6,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.job.builder.SimpleJobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Configuration
@@ -39,59 +46,59 @@ public class SimpleJobConfiguration {
 //    }
 
 
-    @Bean
-    public Job job() {
-        SimpleJobBuilder jobBuilder = jobBuilderFactory.get("prodoJob")
-                .incrementer(new RunIdIncrementer())
-                .start(stepBuilderFactory.get("prodoStartStep")
-                        .tasklet((contribution, chunkContext) -> {
-                            log.info(">>>>> Start Step >>>>>");
-                            return RepeatStatus.FINISHED;
-                        })
-                        .build());
-        stepService.getSteps()
-                .forEach(step -> jobBuilder.next(step));
-        jobBuilder.listener(new JobExecutionListener() {
-            @Override
-            public void beforeJob(JobExecution jobExecution) {
-                log.info(">>>>> before job >>>>>");
-            }
+//    @Bean
+//    public Job job() {
+//        SimpleJobBuilder jobBuilder = jobBuilderFactory.get("prodoJob")
+//                .incrementer(new RunIdIncrementer())
+//                .start(stepBuilderFactory.get("prodoStartStep")
+//                        .tasklet((contribution, chunkContext) -> {
+//                            log.info(">>>>> Start Step >>>>>");
+//                            return RepeatStatus.FINISHED;
+//                        })
+//                        .build());
+//        stepService.getSteps()
+//                .forEach(step -> jobBuilder.next(step));
+//        jobBuilder.listener(new JobExecutionListener() {
+//            @Override
+//            public void beforeJob(JobExecution jobExecution) {
+//                log.info(">>>>> before job >>>>>");
+//            }
+//
+//            @Override
+//            public void afterJob(JobExecution jobExecution) {
+//                log.info(">>>>> after job >>>>>");
+//            }
+//        });
+//        return jobBuilder.build();
+//    }
 
-            @Override
-            public void afterJob(JobExecution jobExecution) {
-                log.info(">>>>> after job >>>>>");
-            }
-        });
-        return jobBuilder.build();
+    @Bean
+    public Job job(Step openbankServiceUseLogStep) {
+        return jobBuilderFactory.get("openbankServiceUseLogJob")
+                .start(openbankServiceUseLogStep)
+                .listener(new JobExecutionListener() {
+                    @Override
+                    public void beforeJob(JobExecution jobExecution) {
+                        final String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+                        log.info("StartJob: {} - {}", jobExecution.getJobInstance().getJobName(), baseDt);
+                        jobExecution.getExecutionContext().put("baseDt", baseDt);
+                    }
+
+
+                    @Override
+                    public void afterJob(JobExecution jobExecution) {
+                        log.info(">>>>> after job >>>>>");
+                    }
+                })
+                .build();
     }
 
-//    @Bean
-//    public Job job(Step openbankServiceUseLogStep) {
-//        return jobBuilderFactory.get("openbankServiceUseLogJob")
-//                .start(openbankServiceUseLogStep)
-//                .build();
-//    }
-//
-//    @Bean
-//    public Step openbankServiceUseLogStep(Tasklet openbankServiceUseLogTasklet) {
-//        return stepBuilderFactory.get("openbankServiceUseLogStep")
-//                .tasklet(openbankServiceUseLogTasklet)
-//                .listener(new JobExecutionListener() {
-//                    @Override
-//                    public void beforeJob(JobExecution jobExecution) {
-//                        final String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-//                        log.info("StartJob: {} - {}", jobExecution.getJobInstance().getJobName(), baseDt);
-//                        jobExecution.getExecutionContext().put("baseDt", baseDt);
-//                    }
-//
-//
-//                    @Override
-//                    public void afterJob(JobExecution jobExecution) {
-//                        log.info(">>>>> after job >>>>>");
-//                    }
-//                })
-//                .build();
-//    }
+    @Bean
+    public Step openbankServiceUseLogStep(/*@Value("#{jobParameters[baseDt]}") String baseDt, */Tasklet openbankServiceUseLogTasklet) {
+        return stepBuilderFactory.get("openbankServiceUseLogStep")
+                .tasklet(openbankServiceUseLogTasklet)
+                .build();
+    }
 
 
 }

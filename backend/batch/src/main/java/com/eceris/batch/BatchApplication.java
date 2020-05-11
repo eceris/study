@@ -8,6 +8,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -26,7 +27,11 @@ public class BatchApplication /*implements ApplicationRunner*/ {
     private final PersonService service;
 
     public static void main(String[] args) {
-        SpringApplication.run(BatchApplication.class, args);
+
+
+        try (ConfigurableApplicationContext application = SpringApplication.run(BatchApplication.class, args) ) {
+            System.out.println("Shutdown application context : " + application);
+        }
     }
 
 //    @Override
