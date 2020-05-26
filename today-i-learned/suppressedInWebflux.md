@@ -1,6 +1,6 @@
 
 
-1. 문제
+# 1. 문제
 오이도에서는 예상치 않은 예외가 발생했을 경우 처리를 위해 AbstractErrorWebExceptionHandler를 상속받아 로그를 남기도록 구현하고 있습니다. AsyncAppender와 함께 SentryAppender를 사용해 센트리에 메시지와 stacktrace 등등 여러 정보를 남기고 있는데요....
 Sentry에 stacktrace가 기대한대로 남지 않는 이슈가 있었습니다.
 
@@ -67,15 +67,17 @@ Stack trace:
 뭔가... 잘 보면 **Suppressed: reactor.core.publisher.FluxOnAssembly$OnAssemblyException:** 이후로는 로그가 센트리에 안남는 상황입니다.
 
 
-2. 추적
+# 2. 추적
 
-2-1. 일단 SentryAppender 를 까보기 시작...했는데.....아래와 같은 순서로 센트리에 전송
+## 2-1. 일단 SentryAppender 를 까보기 시작...했는데.....아래와 같은 순서로 센트리에 전송
+
 	- SentryAppender를 통해 throwable 객체를 받아 EventBuilder 객체로 변경
 	- stacktrace 정보는 throwable.getStackEventBuilder.withSentryInterface() 에 저장후 전송.
 
-그러면.... 센트리는 stacktrace 정보를 가공하지 않는거고... 실제로 stacktrace가 한줄이었다는 얘기.....
+	그러면.... 센트리는 stacktrace 정보를 가공하지 않는거고... 실제로 stacktrace가 한줄이었다는 얘기.....
 
-2-2. 그럼 다시, stacktrace는 누가 만들어주지?
+## 2-2. 그럼 다시, stacktrace는 누가 만들어주지?
+
 	- 일단 의심이 되는 [OnAssemblyException](https://github.com/reactor/reactor-core/blob/master/reactor-core/src/main/java/reactor/core/publisher/FluxOnAssembly.java#L411) 이놈을 보기 시작..
 	- onError에서 호출하는 fail(throwable)을 뜯어보니 뭔가 stackTrace를 조작하는데 요약하면....
 	```
@@ -85,17 +87,21 @@ Stack trace:
 	```
 	- 진짜로 sentry에 전송되는 throwable에는 stacktrace한개만 담음.
 
-2-3. 왜그럴까?
+## 2-3. 왜그럴까?
+
 	- [이슈](https://github.com/reactor/reactor-core/pull/1781)를 찾아보니 reator-core에서 debug모드의 중요정보를 아래에 보여주는 것 보단, 위에 보여주는것이 맞다고 함 -> debug 모드에서는 보기 편함....
 	- [근데 사용자가 만드는 코드는 message가 사용자가 보기 편리한건 아니라고 함.](https://github.com/reactor/reactor-core/pull/1781#issuecomment-507715538)
 	- 어쨋든 sentry가 필요한 메시지는 suppressed 안에 담겨있음.....
 
-2-4. suppressed는 뭐지?? 
+## 2-4. suppressed는 뭐지?? 
+
 	- 아래에 따로 설명.
 
 
-3. 해결
+# 3. 해결
+
 	- 개발자는 파일로그보다는 sentry를 보고 예외를 추적함. 일단은 sentry에서 스택정보를 받을 수 있게 직접 넣어주자.
+
 	```
 	if (throwable.getSuppressed().length > 0) {
 		throwable.setStackTrace(throwable.getSuppressed()[0].getStackTrace());
@@ -104,10 +110,17 @@ Stack trace:
 	```
 
 
+# 4. 결론 
 
-아래. Suppressed
+- 리액터 코어에서 디버깅을 편하게 하기 위해 assembly 시점에 기존 예외의 stack을 복사한 OnAssemblyException 을 만들어 suppressed로 담고 잘 보여주려고함.
+- 근데 우리는 센트리를 통해 스택트레이스를 보는거라, 우리가 볼수 있는 형태로 변경해서 보면 될듯!!!
+
+
+# 아래. Suppressed
+
 - suppressed Exception은 던져지지만 무시되는 예외. 이것을 알아볼 수 있는 예외는 자바에서 try catch finally 블록의 finally 블록에서 예외를 발생시키는 시나리오. 
 - finally에서 던져지는 예외로 인해 원래 Exception이 먹힘. 그래서.... finally에서 발생하는 예외.addSuppressed(firstException)를 하여 추가해주면 throwable에서 접근 가능하다.
+
 ```
 public static void demoAddSuppressedException(String filePath) throws IOException {
     Throwable firstException = null;
@@ -128,7 +141,9 @@ public static void demoAddSuppressedException(String filePath) throws IOExceptio
     }
 }
 ```
+
 - 근데 Using try-with-resources 를 쓰면 잘 잡아서 처리해준다.
+
 ```
 public class ExceptionalResource implements AutoCloseable {
      
@@ -161,9 +176,6 @@ try {
 ```
 
 
-4. 결론 
-- 리액터 코어에서 디버깅을 편하게 하기 위해 assembly 시점에 기존 예외의 stack을 복사한 OnAssemblyException 을 만들어 suppressed로 담고 잘 보여주려고함.
-- 근데 우리는 센트리를 통해 스택트레이스를 보는거라, 우리가 볼수 있는 형태로 변경해서 보면 될듯!!!
 
 
 
