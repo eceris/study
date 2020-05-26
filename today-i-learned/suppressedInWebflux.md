@@ -128,8 +128,6 @@ public static void demoAddSuppressedException(String filePath) throws IOExceptio
     }
 }
 ```
-
-- 자바7의 Throwable 객체에 들어간 것.
 - 근데 Using try-with-resources 를 쓰면 잘 잡아서 처리해준다.
 ```
 public class ExceptionalResource implements AutoCloseable {
@@ -163,9 +161,10 @@ try {
 ```
 
 
+4. 결론 
+- 리액터 코어에서 디버깅을 편하게 하기 위해 assembly 시점에 기존 예외의 stack을 복사한 OnAssemblyException 을 만들어 suppressed로 담고 잘 보여주려고함.
+- 근데 우리는 센트리를 통해 스택트레이스를 보는거라, 우리가 볼수 있는 형태로 변경해서 보면 될듯!!!
 
-
-결론 
 
 
 
