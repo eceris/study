@@ -396,18 +396,386 @@ public class Customer {
 
 
 
-
-
 # 15. setter의 인자로 Optional을 사용하지 말라.
+- Optional 은 자바Bean 혹은 영속화를 위한 property로 사용하기 위한 것이 아님. 심지어 Serializable 도 아님. Optional 을 settter를 통해 구현하는 것은 안티패턴임. 그럼에도 불구하고 도메인모델의 엔티티로 Optional을 사용하는 것은 가능하긴 하다.
+
+```java
+// AVOID
+@Entity
+public class Customer implements Serializable {
+    private static final long serialVersionUID = 1L;
+    ...
+    @Column(name="customer_zip")
+    private Optional<String> postcode; // optional field, thus may be null
+     public Optional<String> getPostcode() {
+       return postcode;
+     }
+     public void setPostcode(Optional<String> postcode) {
+       this.postcode = postcode;
+     }
+     ...
+}
+```
+
+```java
+// PREFER
+@Entity
+public class Customer implements Serializable {
+    private static final long serialVersionUID = 1L;
+    ...
+    @Column(name="customer_zip")
+    private String postcode; // optional field, thus may be null
+    public Optional<String> getPostcode() {
+      return Optional.ofNullable(postcode);
+    }
+    public void setPostcode(String postcode) {
+       this.postcode = postcode;
+    }
+    ...
+}
+```
+
 # 16. 메소드의 인자로 Optional을 사용하지 말라.
+- Optionals 를 생성하기위해 call sites를 강제하지 마세요. 그리고 Optional을 setters의 필드나 생성자의 인자로 사용하지 마세요.
+Optional을 메소드의 인자로 사용하는것은 자주발생하는 실수중 하나. 필요치 않게 코드를 복잡하게함. 
+
+- Optional 들을 생성하기 위해 강제 콜 사이트 하는것 대신에 파라미터 선택에 대한 책임을 져야 함. 이런것들이 코드를 어지럽히고 의존성을 유발함. 그리고 시간이 지나면 어디서나 사용되고 있음. 
+- 기억할 것은 Optional은 또 다른 객체(혹은 컨테이너) 이며, 비싼놈임.(bare ref 메모리의 4배를 소비함.) 그럼에도 경우에 따라 이것을 체크해서 상황에 따라 잘 사용하길 바람.
+
+```java
+// AVOID
+public void renderCustomer(Cart cart, Optional<Renderer> renderer,
+                           Optional<String> name) {     
+    if (cart == null) {
+        throw new IllegalArgumentException("Cart cannot be null");
+    }
+    Renderer customerRenderer = renderer.orElseThrow(
+        () -> new IllegalArgumentException("Renderer cannot be null")
+    );    
+    String customerName = name.orElseGet(() -> "anonymous"); 
+    ...
+}
+// call the method - don't do this
+renderCustomer(cart, Optional.<Renderer>of(CoolRenderer::new), Optional.empty());
+```
+```java
+// PREFER
+public void renderCustomer(Cart cart, Renderer renderer, String name) {
+    if (cart == null) {
+        throw new IllegalArgumentException("Cart cannot be null");
+    }
+    if (renderer == null) {
+        throw new IllegalArgumentException("Renderer cannot be null");
+    }
+    String customerName = Objects.requireNonNullElseGet(name, () -> "anonymous");
+    ...
+}
+// call this method
+renderCustomer(cart, new CoolRenderer(), null);
+```
+
+```java
+
+// PREFER
+public void renderCustomer(Cart cart, Renderer renderer, String name) {
+    Objects.requireNonNull(cart, "Cart cannot be null");        
+    Objects.requireNonNull(renderer, "Renderer cannot be null");        
+    String customerName = Objects.requireNonNullElseGet(name, () -> "anonymous");
+    ...
+}
+// call this method
+renderCustomer(cart, new CoolRenderer(), null);
+
+```
+
+```java
+// PREFER
+// write your own helper
+public final class MyObjects {
+    private MyObjects() {
+        throw new AssertionError("Cannot create instances for you!");
+    }
+    public static <T, X extends Throwable> T requireNotNullOrElseThrow(T obj, 
+        Supplier<? extends X> exceptionSupplier) throws X {       
+        if (obj != null) {
+            return obj;
+        } else { 
+            throw exceptionSupplier.get();
+        }
+    }
+}
+public void renderCustomer(Cart cart, Renderer renderer, String name) {
+    MyObjects.requireNotNullOrElseThrow(cart, 
+                () -> new IllegalArgumentException("Cart cannot be null"));
+    MyObjects.requireNotNullOrElseThrow(renderer, 
+                () -> new IllegalArgumentException("Renderer cannot be null"));    
+    String customerName = Objects.requireNonNullElseGet(name, () -> "anonymous");
+    ...
+}
+// call this method
+renderCustomer(cart, new CoolRenderer(), null);
+```
+
+
 # 17. empty collection 이나 array 를 반환할 때 Optional을 사용하지 말라.
+- 코드를 깨끗하고 가볍게 유지하려면 null이나 빈 collections/arrays를 위해 Optional을 리턴하지마세요.
+- 그냥 빈 collections/arrays 를 반환하는 것이 좋아요.
+
+```java
+// AVOID
+public Optional<List<String>> fetchCartItems(long id) {
+    Cart cart = ... ;    
+    List<String> items = cart.getItems(); // this may return null
+    return Optional.ofNullable(items);
+}
+```
+
+```java
+// PREFER
+public List<String> fetchCartItems(long id) {
+    Cart cart = ... ;    
+    List<String> items = cart.getItems(); // this may return null
+    return items == null ? Collections.emptyList() : items;
+}
+
+```
+
 # 18. collections에서 Optional을 사용하지 말라.
+- 컬렉션에서 Optional을 사용하는 건 악취를 풍기기도 한다. Optional Map을 만든다고 생각해보자. 그것은 Optional 객체를 담고 있지 않고 보통, null 혹은 이상한 값을 담고 있다. 또한 Optional은 공짜가 아니다. 메모리를 더 소비할 것이다.
+```java
+
+// AVOID
+Map<String, Optional<String>> items = new HashMap<>();
+items.put("I1", Optional.ofNullable(...));
+items.put("I2", Optional.ofNullable(...));
+...
+Optional<String> item = items.get("I1");
+if (item == null) {
+    System.out.println("This key cannot be found");
+} else {
+    String unwrappedItem = item.orElse("NOT FOUND");
+    System.out.println("Key found, Item: " + unwrappedItem);
+}
+```
+
+
+```java
+
+//PREFER
+Map<String, String> items = new HashMap<>();
+items.put("I1", "Shoes");
+items.put("I2", null);
+...
+// get an item
+String item = get(items, "I1");  // Shoes
+String item = get(items, "I2");  // null
+String item = get(items, "I3");  // NOT FOUND
+private static String get(Map<String, String> map, String key) {
+  return map.getOrDefault(key, "NOT FOUND");
+}
+```
+
+```java
+//WORSE
+Map<Optional<String>, String> items = new HashMap<>();
+Map<Optional<String>, Optional<String>> items = new HashMap<>();
+```
+
 # 19. Optional.of() 와 Optional.ofNullable() 을 헷갈리지 말자.
+- 키포인트는 `Optional.of(null)`은 NPE 를 반환할 수 있고, `Optional.ofNullalbe(null)` 은 `Optional.empty`를 반환한다.
+
 # 20. Optional<T> 제네릭을 사용하지말고, non-generic 타입인, OptionalInt, OptionalLong, OptionalDouble 를 사용하자.
-# 21. Equality를 asserting 하기 위해 Optional 을 unwrap 할 필요가 없다.
+- 특별한 경우 boxed primitives타입이 필요하더라도,  Optional<  T  > 는 피하고 generic 이 아닌 `OptionalInt`, `OptionalLong`, 또는 `OptionalDouble`을 사용하자.
+- boxing과 unboxing 은 성능저하의 우려가 있는 비싼 작업이다. 위의 것들은 primitive 타입들의 래퍼 클래스이다.
+
+```java
+// AVOID
+Optional<Integer> price = Optional.of(50);
+Optional<Long> price = Optional.of(50L);
+Optional<Double> price = Optional.of(50.43d);
+```
+
+```java
+// PREFER
+OptionalInt price = OptionalInt.of(50);           // unwrap via getAsInt()
+OptionalLong price = OptionalLong.of(50L);        // unwrap via getAsLong()
+OptionalDouble price = OptionalDouble.of(50.43d); // unwrap via getAsDouble()
+```
+
+# 21. Equality를 단언하기 위해 Optional 을 unwrap 할 필요가 없다.
+- 두 개의 Optional을 비교하기 위해 Optional을 까볼 필요가 없다. 왜냐면 `equals` 함수가 래핑되어있는 값을 비교하기 때문이다. 
+```java
+@Override
+public boolean equals(Object obj) {
+    if (this == obj) {
+        return true;
+    }
+    if (!(obj instanceof Optional)) {
+        return false;
+    }
+    Optional<?> other = (Optional<?>) obj;
+    return Objects.equals(value, other.value);
+}
+```
+- 이미 이렇게 구현되어있다.
+
+```java
+// AVOID
+Optional<String> actualItem = Optional.of("Shoes");
+Optional<String> expectedItem = Optional.of("Shoes");        
+assertEquals(expectedItem.get(), actualItem.get());
+
+```
+
+```java
+// PREFER
+Optional<String> actualItem = Optional.of("Shoes");
+Optional<String> expectedItem = Optional.of("Shoes");        
+assertEquals(expectedItem, actualItem);
+```
+
 # 22. Optional이 제공하는 map(), flatMap() 을 사용하여 변환하자.
+- 두개의 함수는 convinient 함수다.
+- `map()` 함수는 `Optional` 로 래핑된 값을, `flatMap()`은 value를 리턴한다. 
+
+```java
+// AVOID
+Optional<String> lowername ...; // may be empty
+// transform name to upper case
+Optional<String> uppername;
+if (lowername.isPresent()) {
+    uppername = Optional.of(lowername.get().toUpperCase());
+} else {
+    uppername = Optional.empty();
+}
+```
+
+```java
+// PREFER
+Optional<String> lowername ...; // may be empty
+// transform name to upper case
+Optional<String> uppername = lowername.map(String::toUpperCase);
+```
+```java
+
+// AVOID
+List<Product> products = ... ;
+Optional<Product> product = products.stream()
+    .filter(p -> p.getPrice() < 50)
+    .findFirst();
+String name;
+if (product.isPresent()) {
+    name = product.get().getName().toUpperCase();
+} else {
+    name = "NOT FOUND";
+}
+// getName() return a non-null String
+public String getName() {
+    return name;
+}
+```
+
+
+```java
+// PREFER
+List<Product> products = ... ;
+String name = products.stream()
+    .filter(p -> p.getPrice() < 50)
+    .findFirst()
+    .map(Product::getName)
+    .map(String::toUpperCase)
+    .orElse("NOT FOUND");
+// getName() return a String
+public String getName() {
+    return name;
+}
+```
+```java
+
+// AVOID
+List<Product> products = ... ;
+Optional<Product> product = products.stream()
+    .filter(p -> p.getPrice() < 50)
+    .findFirst();
+String name = null;
+if (product.isPresent()) {
+    name = product.get().getName().orElse("NOT FOUND").toUpperCase();
+}
+// getName() return an Optional
+public Optional<String> getName() {
+    return Optional.ofNullable(name);
+}
+```
+
+```java
+// PREFER
+List<Product> products = ... ;
+String name = products.stream()
+    .filter(p -> p.getPrice() < 50)
+    .findFirst()
+    .flatMap(Product::getName)
+    .map(String::toUpperCase)
+    .orElse("NOT FOUND");
+// getName() return an Optional
+public Optional<String> getName() {
+    return Optional.ofNullable(name);
+}
+```
+
 # 23. 미리 정의된 룰을 기반으로 하는 값을 사용하지말고, filter()를 사용하자.
-# 24. Stream api 에 Optional api 를 함께 사용할 수 있다.
+- `filter()` 함수를 이용하여 래핑된 value를 처리하자.
+```java
+// AVOID
+public boolean validatePasswordLength(User userId) {
+    Optional<String> password = ...; // User password
+    if (password.isPresent()) {
+        return password.get().length() > 5;
+    }
+    return false;
+}
+```
+
+
+```java
+// PREFER
+public boolean validatePasswordLength(User userId) {
+    Optional<String> password = ...; // User password
+    return password.filter((p) -> p.length() > 5).isPresent();
+}
+```
+
+# 24. Optional api를 Stream Api 와 체이닝해서 쓸 필요가 있을까?
+- 그러면 Optional.stream()을 사용하자.
+- 자바9 부터 는 `Optional.stream()`를 이용하여 Optional 인스턴스를 Stream처럼 사용할 수 있다.
+- Optional API를 Stream API 와 체이닝 할때 유용한데, 하나의 element를 가진 Stream 혹은 empty Stream(만약 Optional이 not present라면)를 생성한다.
+```java
+// AVOID
+public List<Product> getProductList(List<String> productId) {
+    return productId.stream()
+        .map(this::fetchProductById)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .collect(toList());
+}
+public Optional<Product> fetchProductById(String id) {
+    return Optional.ofNullable(...);
+}
+```
+
+```java
+// PREFER
+public List<Product> getProductList(List<String> productId) {
+    return productId.stream()
+        .map(this::fetchProductById)
+        .flatMap(Optional::stream)
+        .collect(toList());
+}
+public Optional<Product> fetchProductById(String id) {
+    return Optional.ofNullable(...);
+}
+```
+
+
 # 25. Optional에서 Identity-Sensitive 한 작업을 피하자.
 # 26. 비어있는 Optional을 체크하여 반환할 때는, Optional.isEmpty() 를 사용하자.
 
