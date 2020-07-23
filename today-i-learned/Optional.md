@@ -777,5 +777,58 @@ public Optional<Product> fetchProductById(String id) {
 
 
 # 25. Optional에서 Identity-Sensitive 한 작업을 피하자.
-# 26. 비어있는 Optional을 체크하여 반환할 때는, Optional.isEmpty() 를 사용하자.
+- 레퍼런스 equality, hash-based 또는 synchronization 은 피하자.
+- `LocalDateTime` 클래스와 같이 `Optional` 클래스는 value-based 클래스이다.
+```java
 
+// AVOID
+Product product = new Product();
+Optional<Product> op1 = Optional.of(product);
+Optional<Product> op2 = Optional.of(product);
+// op1 == op2 => false, expected true
+if (op1 == op2) { ...
+```
+```java
+// PREFER
+Product product = new Product();
+Optional<Product> op1 = Optional.of(product);
+Optional<Product> op2 = Optional.of(product);
+// op1.equals(op2) => true,expected true
+if (op1.equals(op2)) { ...
+```
+
+```java
+// NEVER DO
+Optional<Product> product = Optional.of(new Product());
+synchronized(product) {
+    ...
+}
+```
+
+# 26. 비어있는 Optional을 체크하여 boolean 을 반환할 때는, java11의 Optional.isEmpty() 를 사용하자.
+- 자바11 부터 `Optional`객체가 비어있는지 쉽게 체크하는 `isEmpty()`함수가 추가되었다.
+```java
+// AVOID (Java 11+)
+public Optional<String> fetchCartItems(long id) {
+    Cart cart = ... ; // this may be null
+    ...    
+    return Optional.ofNullable(cart);
+}
+public boolean cartIsEmpty(long id) {
+    Optional<String> cart = fetchCartItems(id);
+    return !cart.isPresent();
+}
+```
+
+```java
+// PREFER (Java 11+)
+public Optional<String> fetchCartItems(long id) {
+    Cart cart = ... ; // this may be null
+    ...    
+    return Optional.ofNullable(cart);
+}
+public boolean cartIsEmpty(long id) {
+    Optional<String> cart = fetchCartItems(id);
+    return cart.isEmpty();
+}
+```
