@@ -202,7 +202,39 @@ boolean present();
  
 
 ### 2.5 퍼블릭 상수(public constant)를 사용하지 마세요
- - 
+ - 코드중복이라는 문제를 해결하기 위해 결합도가 높아지고 응집도가 낮아지게 하는 실수를 한다.
+
+#### 2.5.1 결합도 증가
+ - 퍼블릭 상수가 변경시 어떤 객체에 어떤 영향을 미치는지 알 수 없음.
+ - 상수가 복잡해질수록 문제는 더 심각해짐.
+
+#### 2.5.2 응집도 저하
+ - 상수는 자신에 대해 알지 못하고 삶의 의미?? 가 명확하지 않음. 이말은 즉 응집도가 저하된다는 얘기.
+ - 만약 구현한다면 아래와 같이 래핑하고 의미를 부여하여 사용.
+```java
+class EOLString {
+	private final String origin;
+	EOLString(String src) {
+		this.origin = src;
+	}
+	@Override
+	String toString() {
+		return String.format("%s\r\n", origin);
+	}
+}
+
+class Records {
+	void write(Writer out) {
+		for (Record rec : this.all) {
+			out.write(new EOLString(rec.toString()));
+		}
+	}
+}
+```
+ - EOLString 에 대한 결합은 계약을 통해 추가되었고 이 결합은 언제라도 분리가 가능하여 유지보수성을 높힘.
+ - 사실, 애플리케이션을 구성하는 클래스의 수가 많을수록 설계가 더 좋아지고 유지보수하기도 쉬워진다?????고 하는데 잘 모르겠음.
+
+
 ### 2.6 불변 객체로 만드세요
  - 
 ### 2.7 문서를 작성하는 대신 테스트를 만드세요
