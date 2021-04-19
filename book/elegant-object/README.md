@@ -126,5 +126,87 @@ class StringAsInteger implements Number {
 ```
 
 
+### 2.1 가능하면 적게 캡슐화하세요
+ - 언어 설계의 결함으로 == 비교와 equals 의 기본 구현 역시 정확한 판단을 하지 못함. 
+ - 해결하기 위해 항상 equals() 메소드를 오버라이드 하자.<sub>lombok의 @EqualsAndHashCode는 좋은 대안이다.</sub>
+
+### 2.2 최소한 뭔가는 캡슐화하세요
+
+### 2.3 항상 인터페이스를 사용하세요
+
+### 2.4 메서드 이름을 신중하게 선택하세요
+ - 빌더는 어떤 것을 만들고, 조정자는 뭔가를 조작하는데, 이 둘을 한꺼번에 하는 것을은 옳지 않다.
+
+#### 2.4.1 빌더는 명사다
+```java
+// 잘못된 예
+InputStream load(URL url);
+String read(File file);
+int add(int x, int y);
+
+// 잘된 예
+InputStream stream(URL url);
+String content(File file);
+int sum(int x, int y);
+```
+
+#### 2.4.2 조정자는 동사다
+ - 조정자와 빌더의 다른 점은 반환값의 유무. 빌더만이 값을 반환할 수 있고, 이름은 명사.
+ - 빌더패턴을 기본적으로 반대하지만 만약 사용한다면...
+```java
+class Book {
+	Book withAuthor(String author);
+	Book withTitle(String title);
+	Book withPage(Page page);
+}
+```
+
+#### 2.4.3 빌더와 조정자 혼합하기
+```java
+class Document {
+	int write(InputStream content);
+} 
+```
+ - 위의 `write`함수는 데이터를 쓰는 동시에 쓰여진 바이트를 반환하는데 초점이 뚜렷한 좋은 코드는 아님.
+ - 차라리 아래와 같이 리팩토링 하는 것이 좋음.
+```java
+class Document {
+	OutputPipe OutputPipe();
+}
+class OutputPipe {
+	void write(InputStream content);
+	int bytes();
+	long time();
+}
+```
+
+#### 2.4.4 Boolean 값을 결과로 반환하는 경우
+```java
+// 잘못된 예
+boolean isEmpty();
+boolean isReadable();
+boolean isNegative();
+
+boolean equals(Object obj);
+boolean exists();
+
+//잘된 예
+boolean empty(); // is empty
+boolean readable();	// is readable
+boolean negative(); // is negative
+
+boolean equalTo(Object obj);
+boolean present();
+```
+ - 빌더인 동시에 조정자여서는 안됨. 빌더라면 이름을 명사로, 조정자라면 이름을 동사로..
+ 
+
+### 2.5 퍼블릭 상수(public constant)를 사용하지 마세요
+ - 
+### 2.6 불변 객체로 만드세요
+ - 
+### 2.7 문서를 작성하는 대신 테스트를 만드세요
+ - 
+
 
 
