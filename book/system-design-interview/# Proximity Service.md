@@ -65,7 +65,73 @@ SELECT * FROM geohash_index WHERE geohash LIKE '9q8zn%
 
 #### Option 4: Quadtree
 - 쿼드트리는 2차원 공간을 반복적으로 4분면으로 나누어 특정한 조건의 장소를 찾는 자료구조.
-- 
+- DB 스트럭쳐는 아님 in-memory 스트럭쳐 
+- 그래서 서버 스타트 업 시간에 200million 업종의 쿼드트리를 생성하며, 몇분이 채 걸리지 않음.
+- 블루/그린 배포는 좋지 않고(qps가 높아질 듯, ) 점진적으로 미리 진행해놓는것이 좋을 것 같다.(사장님의 업장 변경사항은 내일 반영된다던지...)
+
+
+#### Option 5: Google S2
+- in-memory solution
+- geofencing 을 위한 좋은 도구. 
+- 힐버트 곡선? 을 사용한 알고리즘인데, 인터뷰에서 설명하기는 어려우니, geohash or quadtree 를 추천
+
+
+
+#### Geohash vs quadtree
+- Geohash
+```
+- 구현이 편하고 트리를 구성하지 않아도 됨.
+- 특정 구역의 비지니스 반환을 지원
+- 인덱싱 업데이트에 용이.
+- 인구 밀집도에 따른 동적 그리드 사이즈 적용은 별도의 작업이 필요.
+```
+
+- Quadtree
+```
+- 구현이 약간 어렵고, 구현에 트리가 필요함.
+- k-nearest 알고리즘 지원
+- 인덱싱 업데이트는 지오해시보다 조금 복잠함. 
+- 인구 밀집도에 따른 동적 그리드 사이즈 적용 가능.
+```
+
+
+## Step 3 - Design Deep Dive
+
+### Geospatial index table
+- 하나의 geohash 값에 여러개의 비지니스 아이디를 매핑하는것을 추천.
+- 락을 잡지 않아도 되고(어차피 composite key이니...)
+
+### Scale the geospatial index
+- 샤딩 vs read replica 를 둘것인지.
+- 샤딩의 접근은 조심스러워야 함. 어플리케이션 레이어에 침투하기 때문.
+- 그러나 현재 요구사항은 샤딩보다는 레플리카를 두는것을 추천. 
+
+### Caching
+- 캐싱은 현재로서는 불필요. read-replica 로 충분히 극복 가능.
+- 캐싱을 논할때는 항상 밴치마킹과 비용분석을 통해 진행하라. p26 중요.
+
+### Cache key
+- Geohash/Quadtree 를 키로 하는것이 좋음.
+
+
+## Final design diagram
+![final-design-diagram](./design-diagram.png)
+
+- 500미터안에 식당을 찾으려고 한다면, 클라이언트는 (latitude = 37.776720, longitude = —122.416730) and radius (500m) 를 로드밸런서로 전송
+- 로드밸런서는 LBS로 포워딩
+- LBS는 검색결과와 매치되는 geohash 길이를 찾는다. geohash-length = 6
+- LBS는 근처의 geohash를 리스트로 계산한다. 
+```
+list_of_geohashes = [my_geohash, neighbor1_geohash, neighbor2_geohash,
+..., neighbor8_geohash]. 
+```
+- list_of_geohashes 의 각 geohash로 Redis server에 businessIDs 들 반환
+- 반환된 businessIDs로 BusinessInfo를 조회 하여 클라이언트에 제공.
+
+
+
+
+
 
 
 
